@@ -2,12 +2,12 @@
 
 stdenv.mkDerivation rec {
   name = "openocd-${version}";
-  version = "0.10.0+dev-20190912";
+  version = "0.10.0-977-g22b4abc4";
 
   src = fetchgit {
     url = "git://git.code.sf.net/p/openocd/code";
-    rev = "31100927203a4e9d5e4f8e019b1a9e1c9d7b51c6";
-    sha256 = "0f0p4j0hlf35m4gfb5lbyvbfq4ws37cmzrqn02pc1qa6vbl22fql";
+    rev = "22b4abc46c552bfc21003853b74e732da773cd1d";
+    sha256 = "07xspyn4w5v47gv6dbliic8f73i4hqma1640y5108n9c5lx45ffp";
   };
 
   # The bootstrap code needs `.git` to fetch submodules which are already fetched by `fetchgit`. By
