@@ -22,10 +22,18 @@ If you don't have the appropriate udev rules installed, you might need to run
 it as root.
 
 ## GDB
-A `.gdbinit` file is provided in the repo root.
-Make sure your `~/.gdbinit` contains a
-```
-add-auto-load-safe-path /path/to/repo/.gdbinit
-```
+Nix provides a GDB multiarch binary. You should then be able run it simply by
+invoking `gdb`.
 
-You should then be able to invoke `gdb` without any parameters.
+Once in gdb, you want to invoke something like the following command sequence:
+
+```
+set pagination off
+file /path/to/elf
+target extended-remote :3333
+monitor halt
+load
+layout asm
+layout src
+layout split
+```
