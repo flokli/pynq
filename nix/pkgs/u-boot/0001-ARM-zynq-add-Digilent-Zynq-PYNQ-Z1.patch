@@ -1,19 +1,17 @@
-From 067449c298a4b53c0b2b567a930a081cbe8bd740 Mon Sep 17 00:00:00 2001
+From 36271141d607263d943e74f41cac4c597c77b262 Mon Sep 17 00:00:00 2001
 From: Florian Klink <flokli@flokli.de>
 Date: Sun, 15 Dec 2019 20:26:23 +0100
 Subject: [PATCH] ARM: zynq: add Digilent Zynq PYNQ Z1
 
 This adds defconfig and dts for the Digilent Zynq PYNQ Z1.
 
-It's very similar to the zynq_zybo_z7, with the following differences:
+It's a Zynq 7000 - based board, and the dts should be working with the
+TUL PYNQ-Z2 as well.
 
- - it's using uart0 (which is connected to the ftdi, uart1 is
- disconnected)
- - it's using another ps-clk-frequency
- - it's using another CONFIG_DEBUG_UART_BASE
+This dts doesn't yet expose all the features, like expansion header pin
+layouts and audio system (which are different between Z1 and Z2).
 
-This should also be compatible with the TUL PYNQ-Z2, which only differs
-in expansion headers and audio systems.
+Signed-off-by: Florian Klink <flokli@flokli.de>
 ---
  arch/arm/dts/Makefile          |  1 +
  arch/arm/dts/zynq-pynq-z1.dts  | 77 ++++++++++++++++++++++++++++++++++

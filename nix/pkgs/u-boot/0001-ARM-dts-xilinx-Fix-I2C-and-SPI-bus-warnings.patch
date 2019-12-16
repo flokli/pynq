@@ -1,0 +1,71 @@
+From ea6154be8ceadc5c73d5f551c94e64320caf8bbb Mon Sep 17 00:00:00 2001
+From: Florian Klink <flokli@flokli.de>
+Date: Mon, 16 Dec 2019 01:20:36 +0100
+Subject: [PATCH] ARM: dts: xilinx: Fix I2C and SPI bus warnings
+
+Ported over from https://patchwork.kernel.org/patch/10599941/
+
+Signed-off-by: Florian Klink <flokli@flokli.de>
+---
+ arch/arm/dts/zynq-zc702.dts       | 12 ++++++------
+ arch/arm/dts/zynq-zc770-xm010.dts |  2 +-
+ arch/arm/dts/zynq-zc770-xm013.dts |  2 +-
+ 3 files changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/arch/arm/dts/zynq-zc702.dts b/arch/arm/dts/zynq-zc702.dts
+index d10695740f..b043d341d6 100644
+--- a/arch/arm/dts/zynq-zc702.dts
++++ b/arch/arm/dts/zynq-zc702.dts
+@@ -181,17 +181,17 @@
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+ 			reg = <7>;
+-			hwmon@52 {
++			hwmon@34 {
+ 				compatible = "ti,ucd9248";
+-				reg = <52>;
++				reg = <0x34>;
+ 			};
+-			hwmon@53 {
++			hwmon@35 {
+ 				compatible = "ti,ucd9248";
+-				reg = <53>;
++				reg = <0x35>;
+ 			};
+-			hwmon@54 {
++			hwmon@36 {
+ 				compatible = "ti,ucd9248";
+-				reg = <54>;
++				reg = <0x36>;
+ 			};
+ 		};
+ 	};
+diff --git a/arch/arm/dts/zynq-zc770-xm010.dts b/arch/arm/dts/zynq-zc770-xm010.dts
+index e1f34653ec..c547d7921d 100644
+--- a/arch/arm/dts/zynq-zc770-xm010.dts
++++ b/arch/arm/dts/zynq-zc770-xm010.dts
+@@ -72,7 +72,7 @@
+ 	status = "okay";
+ 	num-cs = <4>;
+ 	is-decoded-cs = <0>;
+-	flash@0 {
++	flash@1 {
+ 		compatible = "sst25wf080", "jedec,spi-nor";
+ 		reg = <1>;
+ 		spi-max-frequency = <1000000>;
+diff --git a/arch/arm/dts/zynq-zc770-xm013.dts b/arch/arm/dts/zynq-zc770-xm013.dts
+index 05a49982cc..bdf0c2f956 100644
+--- a/arch/arm/dts/zynq-zc770-xm013.dts
++++ b/arch/arm/dts/zynq-zc770-xm013.dts
+@@ -67,7 +67,7 @@
+ 	status = "okay";
+ 	num-cs = <4>;
+ 	is-decoded-cs = <0>;
+-	eeprom: eeprom@0 {
++	eeprom: eeprom@2 {
+ 		at25,byte-len = <8192>;
+ 		at25,addr-mode = <2>;
+ 		at25,page-size = <32>;
+-- 
+2.24.1
+
