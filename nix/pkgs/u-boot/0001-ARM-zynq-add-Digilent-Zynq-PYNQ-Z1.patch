@@ -1,4 +1,4 @@
-From 36271141d607263d943e74f41cac4c597c77b262 Mon Sep 17 00:00:00 2001
+From cbeae68d3c7530be40e35d89cf0ee94892150989 Mon Sep 17 00:00:00 2001
 From: Florian Klink <flokli@flokli.de>
 Date: Sun, 15 Dec 2019 20:26:23 +0100
 Subject: [PATCH] ARM: zynq: add Digilent Zynq PYNQ Z1
@@ -34,7 +34,7 @@ index 3dc9c4d41c..8cb4d179e7 100644
  	zynq-topic-miamilite.dtb \
 diff --git a/arch/arm/dts/zynq-pynq-z1.dts b/arch/arm/dts/zynq-pynq-z1.dts
 new file mode 100644
-index 0000000000..f8bda6bc86
+index 0000000000..6224e80e0b
 --- /dev/null
 +++ b/arch/arm/dts/zynq-pynq-z1.dts
 @@ -0,0 +1,77 @@
@@ -105,7 +105,7 @@ index 0000000000..f8bda6bc86
 +	status = "okay";
 +};
 +
-+&uart1 {
++&uart0 {
 +	u-boot,dm-pre-reloc;
 +	status = "okay";
 +};
