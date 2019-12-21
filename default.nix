@@ -1,9 +1,10 @@
 let
   pkgs = (import ./nix).pkgs;
+  kernel =       pkgs.pkgsCross.armv7l-hf-multiplatform.pynq.kernel;
+  bootBin =      pkgs.pkgsCross.armv7l-hf-multiplatform.pynq.bootBin;
 in {
-  pynqKernel = pkgs.pkgsCross.armv7l-hf-multiplatform.linuxPynqZ1;
+  pynqKernel = kernel;
   pynqBootFS = pkgs.callPackage pkgs.makeBootFS {
-    bootBin = pkgs.pkgsCross.armv7l-hf-multiplatform.pynq.bootBin;
-    kernel = pkgs.pkgsCross.armv7l-hf-multiplatform.pynq.kernel;
+    inherit bootBin kernel;
   };
 }
