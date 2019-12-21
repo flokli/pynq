@@ -1,6 +1,13 @@
 self: super: {
   openocd = super.callPackage ./pkgs/openocd.nix {};
 
+  mkXilinxBin = super.callPackage ({ name ? "boot", xilinx-bootgen, bif, runCommand }:
+    runCommand (name + ".bin") {
+      nativeBuildInputs = [ xilinx-bootgen ];
+    } ''
+    bootgen -image ${bif} -o i $out
+  '');
+
 
   pynq = {
     # everybody loves blobs, right?
@@ -10,23 +17,21 @@ self: super: {
     kernel = super.callPackage ./pkgs/kernel {};
 
     bif = super.writeText "pynq.bif" ''
-      the_ROM_image:
+      image:
       {
           [bootloader]${self.pynq.fsbl}
           ${self.pynq.uboot}/u-boot.elf
       }
     '';
 
-    # TODO: refactor to lib
-    bootBin = super.callPackage ({ xilinx-bootgen, bif, runCommand }:
-      runCommand "boot.bin" {
-        nativeBuildInputs = [ xilinx-bootgen ];
-      } ''
-      bootgen -image ${bif} -o i $out
-    '') { bif = self.pynq.bif; };
+    bootBin = self.mkXilinxBin {
+      bif = self.pynq.bif;
+    };
+
+    };
 
     linuxPackages = super.recurseIntoAttrs (super.linuxPackagesFor self.pynq.kernel);
-    };
+  };
 
   makeBootFS = { pkgs, runCommand, bootBin, kernel }:
     let
