@@ -84,3 +84,9 @@ needs to be used:
  - copy over kernel modules from `$(nix-build -A pynqKernel)/lib/modules`
  - copy over ssh pubkey
  - profit!
+
+### Trying with the official Xilinx Kernel
+If for some reason you want to use Xilinx' kernel, use `pynqBootFSXilinx` to
+create new `/boot` instead of `pynqBootFS`.
+Also remember to copy over the kernel modules from `pynqKernelXilinx` instead
+of `pynqKernel`.
