@@ -125,3 +125,14 @@ needs to be used:
  - copy over kernel modules from `$(nix-build -A pynqKernel)/lib/modules`
  - copy over ssh pubkey
  - profit!
+
+## Caveats
+We tried programming without Xilinx' PS7 IP Core (yosys only synthesizing,
+Vivado for place and route).
+
+We were able to get some somewhat working FPGA bitstreams, but the PS "stalled"
+- serial didn't react anymore, and we could only get it back by pressing the
+"PROG" switch, which resets the PL and causes DONE to be de-asserted.
+
+However, some other connections still seemed to be broken, as the kernel
+couldn't actually access its root filesystem anymore - requiring a reboot.
