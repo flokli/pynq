@@ -39,3 +39,24 @@ layout asm
 layout src
 layout split
 ```
+
+## U-boot
+`nix/pkgs/u-boot provides a recent u-boot with two patches on top:
+ - `0001-ARM-dts-xilinx-Fix-I2C-and-SPI-bus-warnings.patch`
+   nailcare to shut up some warnings, already sent upstream at
+   https://lists.denx.de/pipermail/u-boot/2019-December/393892.html
+ - `0001-ARM-zynq-add-Digilent-Zynq-PYNQ-Z1.patch`
+   adds a PYNQ devicetree file to u-boot.
+   TODO: This isn't yet sent upstream, as SPI or other means to store the
+   u-boot env don't work yet.
+
+It also seems with the refactor to defconfigs, uboot's mainline the dtb
+filename generation got messed up.
+
+In a nice world, one could simply set `fdtdir` to a location containing
+multiple ftds, and u-boot would read from `${soc}-${board}.dtb` (in our case
+`zynq-pynq-z1.dtb`).
+However, when starting uboot, currently `$soc` and `$board` currently both
+contain `zynq`, and it seems `$board` can't really be set from the defconfigs.
+
+For now, we set the `fdtfile` directly in extlinux config.
