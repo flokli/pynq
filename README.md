@@ -3,7 +3,9 @@
 This repository uses nix to provide a reproducible working environment. Please
 follow https://nixos.org/nix to install it.
 
-It also uses [direnv](https://direnv.net) to enter the environment
+Afterwards, you can invoke `nix-shell` to enter the environment.
+
+You can also use [direnv](https://direnv.net) to enter the environment
 automatically.
 
 ## OpenOCD
