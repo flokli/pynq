@@ -61,6 +61,47 @@ contain `zynq`, and it seems `$board` can't really be set from the defconfigs.
 
 For now, we set the `fdtfile` directly in extlinux config.
 
+## Linux Kernel
+### Mainline
+We provide a pretty recent mainline Linux Kernel, with the PYNQ-specific
+devicetree file and more recent patches from xilinx to load an FPGA bitstream
+via DEBUGFS in `./nix/pkgs/kernel/`.
+
+This allows to flash bitstreams as simple as
+
+```
+dd of=/sys/kernel/debug/fpga/fpga0/load bs=26M if=path/to.bin
+```
+
+However, it seems something with initial hardware setup is somewhat broken.
+Sometimes the kernel only says
+
+```
+[   39.116802] fpga_manager fpga0: Error after writing image data to FPGA
+[   39.123388] fpga_manager fpga0: fpga_mgr_load returned with value -110
+[   39.123388] 
+dd: writing to '/sys/kernel/debug/fpga/fpga0/load': Connection timed out
+1+0 records in
+0+0 records out
+0 bytes copied, 2.52188 s, 0.0 kB/s
+```
+
+and doesn't load the bitstream.
+
+However, if we previously booted a Xilinx kernel and programmed a bitstream via
+that, then did a soft reset and booted into the mainline kernel, we were able
+to program via that method.
+
+### "Official" Xilinx Kernel
+We also provide Xilinx' official kernel (together with above mentioned device
+tree file). It lives in `./nix/pkgs/kernel-xilinx`.
+
+When it's running, bitstreams can be flashed by copying the `.bin` to
+`/lib/firmware`, then running
+
+```
+echo filename > /sys/class/fpga_manager/fpga0/firmware
+```
 
 ## Partition Layout, SD Card Image
 The initial bootcode only understands `dos` partitions, so the following layout
@@ -84,9 +125,3 @@ needs to be used:
  - copy over kernel modules from `$(nix-build -A pynqKernel)/lib/modules`
  - copy over ssh pubkey
  - profit!
-
-### Trying with the official Xilinx Kernel
-If for some reason you want to use Xilinx' kernel, use `pynqBootFSXilinx` to
-create new `/boot` instead of `pynqBootFS`.
-Also remember to copy over the kernel modules from `pynqKernelXilinx` instead
-of `pynqKernel`.
