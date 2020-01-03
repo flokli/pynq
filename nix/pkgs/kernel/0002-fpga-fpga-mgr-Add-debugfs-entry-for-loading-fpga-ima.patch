@@ -1,0 +1,141 @@
+From 881521e391f11f04d103243f2d06e758add5d403 Mon Sep 17 00:00:00 2001
+From: Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>
+Date: Tue, 26 Mar 2019 15:06:53 +0530
+Subject: [PATCH 2/3] fpga: fpga-mgr: Add debugfs entry for loading fpga image
+ from user space
+
+This patch adds an debugfs entry to load fpga image from user
+provided address pointer and size.
+
+--> Usage:
+   debugfs_fd = open("/sys/kernel/debug/fpga/fpga0/load", O_WRONLY);
+   write(debugfs_fd, Image_pointer, Image_size);
+
+(OR)
+
+   dd bs=26M if=/mnt/top.bin of=/sys/kernel/debug/fpga/fpga0/load
+
+Signed-off-by: Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>
+Reviewed-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+---
+ drivers/fpga/fpga-mgr.c       | 75 +++++++++++++++++++++++++++++++++++
+ include/linux/fpga/fpga-mgr.h |  2 +
+ 2 files changed, 77 insertions(+)
+
+diff --git a/drivers/fpga/fpga-mgr.c b/drivers/fpga/fpga-mgr.c
+index f5ffb5b07fdc..9dc0b92537c9 100644
+--- a/drivers/fpga/fpga-mgr.c
++++ b/drivers/fpga/fpga-mgr.c
+@@ -558,6 +558,74 @@ static const struct file_operations fpga_mgr_ops_image = {
+ 	.open = fpga_mgr_read_open,
+ 	.read = seq_read,
+ };
++
++/**
++ * fpga_mgr_debugfs_buf_load() - debugfs write function
++ * @file:	User file
++ * @ptr:	Fpga Image Address pointer
++ * @len:	Length of the image
++ * @off:	Offset within the file
++ *
++ * Return: Number of bytes if request succeeds,
++ *	   the corresponding error code otherwise
++ */
++static ssize_t fpga_mgr_debugfs_buf_load(struct file *file,
++					 const char __user *ptr, size_t len,
++					 loff_t *off)
++{
++	struct fpga_manager *mgr = file->private_data;
++	struct device *dev = &mgr->dev;
++	char *buf;
++	int ret = 0;
++
++	/* struct with information about the FPGA image to program. */
++	struct fpga_image_info info = {0};
++
++	/* flags indicates whether to do full or partial reconfiguration */
++	info.flags = mgr->flags;
++
++	ret = fpga_mgr_lock(mgr);
++	if (ret) {
++		dev_err(dev, "FPGA manager is busy\n");
++		return -EBUSY;
++	}
++
++	buf = vmalloc(len);
++	if (!buf) {
++		ret = -ENOMEM;
++		goto mgr_unlock;
++	}
++
++	if (copy_from_user(buf, ptr, len)) {
++		ret = -EFAULT;
++		goto free_buf;
++	}
++
++	info.buf = buf;
++	info.count = len;
++
++	ret = fpga_mgr_load(mgr, &info);
++	if (ret) {
++		dev_err(dev, "fpga_mgr_load returned with value %d\n\r", ret);
++		goto free_buf;
++	}
++
++free_buf:
++	vfree(buf);
++mgr_unlock:
++	fpga_mgr_unlock(mgr);
++
++	if (ret)
++		return ret;
++	else
++		return len;
++}
++
++static const struct file_operations fpga_mgr_ops_load = {
++	.open = simple_open,
++	.write = fpga_mgr_debugfs_buf_load,
++	.llseek = default_llseek,
++};
+ #endif
+ 
+ /**
+@@ -761,6 +829,13 @@ int fpga_mgr_register(struct fpga_manager *mgr)
+ 		debugfs_remove_recursive(mgr->dir);
+ 		goto error_device;
+ 	}
++
++	d = debugfs_create_file("load", 0644, parent, mgr,
++				&fpga_mgr_ops_load);
++	if (!d) {
++		debugfs_remove_recursive(mgr->dir);
++		goto error_device;
++	}
+ #endif
+ 	dev_info(&mgr->dev, "%s registered\n", mgr->name);
+ 
+diff --git a/include/linux/fpga/fpga-mgr.h b/include/linux/fpga/fpga-mgr.h
+index 03fe87088c86..368362637ff3 100644
+--- a/include/linux/fpga/fpga-mgr.h
++++ b/include/linux/fpga/fpga-mgr.h
+@@ -159,6 +159,7 @@ struct fpga_compat_id {
+ /**
+  * struct fpga_manager - fpga manager structure
+  * @name: name of low level fpga manager
++ * @flags: flags determines the type of Bitstream
+  * @dev: fpga manager device
+  * @ref_mutex: only allows one reference to fpga manager
+  * @state: state of fpga manager
+@@ -169,6 +170,7 @@ struct fpga_compat_id {
+  */
+ struct fpga_manager {
+ 	const char *name;
++	long int flags;
+ 	struct device dev;
+ 	struct mutex ref_mutex;
+ 	enum fpga_mgr_states state;
+-- 
+2.24.1
+

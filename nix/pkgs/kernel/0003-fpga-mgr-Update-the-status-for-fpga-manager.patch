@@ -1,0 +1,68 @@
+From 92c6103bcdc13633f0ba7fbdaabf78c0922db7a3 Mon Sep 17 00:00:00 2001
+From: Nava kishore Manne <nava.manne@xilinx.com>
+Date: Wed, 15 May 2019 11:32:36 +0530
+Subject: [PATCH 3/3] fpga: mgr: Update the status for fpga-manager
+
+This patch update the below status values for
+fpga-manager.
+	-Initialization has not finished.
+	-Device internal signal error.
+	-All I/Os are placed in High-Z state.
+	-Start-up sequence has not finished.
+	-Firmware request error
+
+Signed-off-by: Nava kishore Manne <nava.manne@xilinx.com>
+Acked-by: Appana Durga Kedareswara Rao <appana.durga.rao@xilinx.com>
+Reviewed-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+---
+ drivers/fpga/fpga-mgr.c       | 15 +++++++++++++++
+ include/linux/fpga/fpga-mgr.h |  6 ++++++
+ 2 files changed, 21 insertions(+)
+
+diff --git a/drivers/fpga/fpga-mgr.c b/drivers/fpga/fpga-mgr.c
+index 9dc0b92537c9..9c1f57dffa06 100644
+--- a/drivers/fpga/fpga-mgr.c
++++ b/drivers/fpga/fpga-mgr.c
+@@ -428,6 +428,21 @@ static ssize_t status_show(struct device *dev,
+ 		len += sprintf(buf + len, "reconfig IP protocol error\n");
+ 	if (status & FPGA_MGR_STATUS_FIFO_OVERFLOW_ERR)
+ 		len += sprintf(buf + len, "reconfig fifo overflow error\n");
++	if (status & FPGA_MGR_STATUS_SECURITY_ERR)
++		len += sprintf(buf + len, "reconfig security error\n");
++	if (status & FPGA_MGR_STATUS_DEVICE_INIT_ERR)
++		len += sprintf(buf + len,
++			       "initialization has not finished\n");
++	if (status & FPGA_MGR_STATUS_SIGNAL_ERR)
++		len += sprintf(buf + len, "device internal signal error\n");
++	if (status & FPGA_MGR_STATUS_HIGH_Z_STATE_ERR)
++		len += sprintf(buf + len,
++			       "all I/Os are placed in High-Z state\n");
++	if (status & FPGA_MGR_STATUS_EOS_ERR)
++		len += sprintf(buf + len,
++			       "start-up sequence has not finished\n");
++	if (status & FPGA_MGR_STATUS_FIRMWARE_REQ_ERR)
++		len += sprintf(buf + len, "firmware request error\n");
+ 
+ 	return len;
+ }
+diff --git a/include/linux/fpga/fpga-mgr.h b/include/linux/fpga/fpga-mgr.h
+index 368362637ff3..3f8d4aff97d9 100644
+--- a/include/linux/fpga/fpga-mgr.h
++++ b/include/linux/fpga/fpga-mgr.h
+@@ -144,6 +144,12 @@ struct fpga_manager_ops {
+ #define FPGA_MGR_STATUS_INCOMPATIBLE_IMAGE_ERR	BIT(2)
+ #define FPGA_MGR_STATUS_IP_PROTOCOL_ERR		BIT(3)
+ #define FPGA_MGR_STATUS_FIFO_OVERFLOW_ERR	BIT(4)
++#define FPGA_MGR_STATUS_SECURITY_ERR		BIT(5)
++#define FPGA_MGR_STATUS_DEVICE_INIT_ERR		BIT(6)
++#define FPGA_MGR_STATUS_SIGNAL_ERR		BIT(7)
++#define FPGA_MGR_STATUS_HIGH_Z_STATE_ERR	BIT(8)
++#define FPGA_MGR_STATUS_EOS_ERR			BIT(9)
++#define FPGA_MGR_STATUS_FIRMWARE_REQ_ERR	BIT(10)
+ 
+ /**
+  * struct fpga_compat_id - id for compatibility check
+-- 
+2.24.1
+

@@ -1,0 +1,174 @@
+From d5df631cc4158c8c764e7fb551269cfe8ef4eeb9 Mon Sep 17 00:00:00 2001
+From: Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>
+Date: Sat, 21 Jul 2018 10:23:52 +0530
+Subject: [PATCH 1/3] fpga: fpga-mgr: Add readback support
+
+Inorder to debug issues with fpga's users would
+like to read the fpga configuration information.
+This patch adds readback support for fpga configuration data
+in the framework through debugfs interface.
+
+Usage:
+        cat /sys/kernel/debug/fpga/fpga0/readback
+
+Signed-off-by: Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>
+Reviewed-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+---
+ drivers/fpga/Kconfig          |  7 ++++
+ drivers/fpga/fpga-mgr.c       | 68 +++++++++++++++++++++++++++++++++++
+ include/linux/fpga/fpga-mgr.h |  6 ++++
+ 3 files changed, 81 insertions(+)
+
+diff --git a/drivers/fpga/Kconfig b/drivers/fpga/Kconfig
+index cdd4f73b4869..b6d78821bd57 100644
+--- a/drivers/fpga/Kconfig
++++ b/drivers/fpga/Kconfig
+@@ -25,6 +25,13 @@ config FPGA_MGR_SOCFPGA_A10
+ 	help
+ 	  FPGA manager driver support for Altera Arria10 SoCFPGA.
+ 
++config FPGA_MGR_DEBUG_FS
++	bool "FPGA debug fs"
++	select DEBUG_FS
++	help
++	  FPGA manager debug provides support for reading fpga configuration
++	  information.
++
+ config ALTERA_PR_IP_CORE
+ 	tristate "Altera Partial Reconfiguration IP Core"
+ 	help
+diff --git a/drivers/fpga/fpga-mgr.c b/drivers/fpga/fpga-mgr.c
+index c3866816456a..f5ffb5b07fdc 100644
+--- a/drivers/fpga/fpga-mgr.c
++++ b/drivers/fpga/fpga-mgr.c
+@@ -518,6 +518,48 @@ void fpga_mgr_put(struct fpga_manager *mgr)
+ }
+ EXPORT_SYMBOL_GPL(fpga_mgr_put);
+ 
++#ifdef CONFIG_FPGA_MGR_DEBUG_FS
++#include <linux/debugfs.h>
++
++static int fpga_mgr_read(struct seq_file *s, void *data)
++{
++	struct fpga_manager *mgr = (struct fpga_manager *)s->private;
++	int ret = 0;
++
++	if (!mgr->mops->read)
++		return -ENOENT;
++
++	if (!mutex_trylock(&mgr->ref_mutex))
++		return -EBUSY;
++
++	if (mgr->state != FPGA_MGR_STATE_OPERATING) {
++		ret = -EPERM;
++		goto err_unlock;
++	}
++
++	/* Read the FPGA configuration data from the fabric */
++	ret = mgr->mops->read(mgr, s);
++	if (ret)
++		dev_err(&mgr->dev, "Error while reading configuration data from FPGA\n");
++
++err_unlock:
++	mutex_unlock(&mgr->ref_mutex);
++
++	return ret;
++}
++
++static int fpga_mgr_read_open(struct inode *inode, struct file *file)
++{
++	return single_open(file, fpga_mgr_read, inode->i_private);
++}
++
++static const struct file_operations fpga_mgr_ops_image = {
++	.owner = THIS_MODULE,
++	.open = fpga_mgr_read_open,
++	.read = seq_read,
++};
++#endif
++
+ /**
+  * fpga_mgr_lock - Lock FPGA manager for exclusive use
+  * @mgr:	fpga manager
+@@ -698,6 +740,28 @@ int fpga_mgr_register(struct fpga_manager *mgr)
+ 	if (ret)
+ 		goto error_device;
+ 
++#ifdef CONFIG_FPGA_MGR_DEBUG_FS
++	struct dentry *d, *parent;
++
++	mgr->dir = debugfs_create_dir("fpga", NULL);
++	if (!mgr->dir)
++		goto error_device;
++
++	parent = mgr->dir;
++	d = debugfs_create_dir(mgr->dev.kobj.name, parent);
++	if (!d) {
++		debugfs_remove_recursive(parent);
++		goto error_device;
++	}
++
++	parent = d;
++	d = debugfs_create_file("image", 0644, parent, mgr,
++				&fpga_mgr_ops_image);
++	if (!d) {
++		debugfs_remove_recursive(mgr->dir);
++		goto error_device;
++	}
++#endif
+ 	dev_info(&mgr->dev, "%s registered\n", mgr->name);
+ 
+ 	return 0;
+@@ -719,6 +783,10 @@ void fpga_mgr_unregister(struct fpga_manager *mgr)
+ {
+ 	dev_info(&mgr->dev, "%s %s\n", __func__, mgr->name);
+ 
++#ifdef CONFIG_FPGA_MGR_DEBUG_FS
++	debugfs_remove_recursive(mgr->dir);
++#endif
++
+ 	/*
+ 	 * If the low level driver provides a method for putting fpga into
+ 	 * a desired state upon unregister, do it.
+diff --git a/include/linux/fpga/fpga-mgr.h b/include/linux/fpga/fpga-mgr.h
+index e8ca62b2cb5b..03fe87088c86 100644
+--- a/include/linux/fpga/fpga-mgr.h
++++ b/include/linux/fpga/fpga-mgr.h
+@@ -114,6 +114,7 @@ struct fpga_image_info {
+  * @write: write count bytes of configuration data to the FPGA
+  * @write_sg: write the scatter list of configuration data to the FPGA
+  * @write_complete: set FPGA to operating state after writing is done
++ * @read: optional: read FPGA configuration information
+  * @fpga_remove: optional: Set FPGA into a specific state during driver remove
+  * @groups: optional attribute groups.
+  *
+@@ -132,6 +133,7 @@ struct fpga_manager_ops {
+ 	int (*write_sg)(struct fpga_manager *mgr, struct sg_table *sgt);
+ 	int (*write_complete)(struct fpga_manager *mgr,
+ 			      struct fpga_image_info *info);
++	int (*read)(struct fpga_manager *mgr, struct seq_file *s);
+ 	void (*fpga_remove)(struct fpga_manager *mgr);
+ 	const struct attribute_group **groups;
+ };
+@@ -163,6 +165,7 @@ struct fpga_compat_id {
+  * @compat_id: FPGA manager id for compatibility check.
+  * @mops: pointer to struct of fpga manager ops
+  * @priv: low level driver private date
++ * @dir: debugfs image directory
+  */
+ struct fpga_manager {
+ 	const char *name;
+@@ -172,6 +175,9 @@ struct fpga_manager {
+ 	struct fpga_compat_id *compat_id;
+ 	const struct fpga_manager_ops *mops;
+ 	void *priv;
++#ifdef CONFIG_FPGA_MGR_DEBUG_FS
++	struct dentry *dir;
++#endif
+ };
+ 
+ #define to_fpga_manager(d) container_of(d, struct fpga_manager, dev)
+-- 
+2.24.1
+
