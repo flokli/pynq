@@ -15,6 +15,7 @@ self: super: {
 
     uboot = super.callPackage ./pkgs/u-boot {};
     kernel = super.callPackage ./pkgs/kernel {};
+    kernelXilinx = super.callPackage ./pkgs/kernel-xilinx {};
 
     bif = super.writeText "pynq.bif" ''
       image:
@@ -26,8 +27,6 @@ self: super: {
 
     bootBin = self.mkXilinxBin {
       bif = self.pynq.bif;
-    };
-
     };
 
     linuxPackages = super.recurseIntoAttrs (super.linuxPackagesFor self.pynq.kernel);

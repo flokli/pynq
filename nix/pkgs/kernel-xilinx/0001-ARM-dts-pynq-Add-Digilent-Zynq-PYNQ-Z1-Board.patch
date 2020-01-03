@@ -1,0 +1,109 @@
+From c3cc995b17f2316232cf712fb0780cfc64c33e3b Mon Sep 17 00:00:00 2001
+From: Florian Klink <flokli@flokli.de>
+Date: Mon, 16 Dec 2019 01:42:40 +0100
+Subject: [PATCH] ARM: dts: pynq: Add Digilent Zynq PYNQ Z1 Board
+
+This adds the dts for the Digilent Zynq PYNQ Z1.
+
+It's a Zynq 7000 - based board, and the dts should be working with the
+TUL PYNQ-Z2 as well.
+
+This dts doesn't yet expose all the features, like expansion header pin
+layouts and audio system (which are different between Z1 and Z2).
+
+Signed-off-by: Florian Klink <flokli@flokli.de>
+---
+ arch/arm/boot/dts/Makefile         |  1 +
+ arch/arm/boot/dts/zynq-pynq-z1.dts | 68 ++++++++++++++++++++++++++++++
+ 2 files changed, 69 insertions(+)
+ create mode 100644 arch/arm/boot/dts/zynq-pynq-z1.dts
+
+diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+index b5bd3de87c33..c34c24ff832d 100644
+--- a/arch/arm/boot/dts/Makefile
++++ b/arch/arm/boot/dts/Makefile
+@@ -1124,6 +1124,7 @@ dtb-$(CONFIG_ARCH_ZYNQ) += \
+ 	zynq-cc108.dtb \
+ 	zynq-microzed.dtb \
+ 	zynq-parallella.dtb \
++	zynq-pynq-z1.dtb \
+ 	zynq-zc702.dtb \
+ 	zynq-zc706.dtb \
+ 	zynq-zc770-xm010.dtb \
+diff --git a/arch/arm/boot/dts/zynq-pynq-z1.dts b/arch/arm/boot/dts/zynq-pynq-z1.dts
+new file mode 100644
+index 000000000000..3455d0cd09f2
+--- /dev/null
++++ b/arch/arm/boot/dts/zynq-pynq-z1.dts
+@@ -0,0 +1,68 @@
++// SPDX-License-Identifier: GPL-2.0+
++/dts-v1/;
++#include "zynq-7000.dtsi"
++#include <dt-bindings/gpio/gpio.h>
++
++/ {
++	model = "Digilent Zynq PYNQ Z1";
++	compatible = "digilent,zynq-pynq-z1", "xlnx,zynq-7000";
++
++	aliases {
++		ethernet0 = &gem0;
++		serial0 = &uart0;
++	};
++
++	memory@0 {
++		device_type = "memory";
++		reg = <0x0 0x20000000>;
++	};
++
++	chosen {
++		bootargs = "";
++		stdout-path = "serial0:115200n8";
++	};
++
++	gpio-leds {
++		compatible = "gpio-leds";
++
++		ld4 {
++			label = "zynq-pynq-z1:green:ld4";
++			gpios = <&gpio0 7 GPIO_ACTIVE_HIGH>;
++		};
++	};
++
++	usb_phy0: phy0 {
++		#phy-cells = <0>;
++		compatible = "usb-nop-xceiv";
++		reset-gpios = <&gpio0 46 GPIO_ACTIVE_LOW>;
++	};
++};
++
++&clkc {
++	ps-clk-frequency = <50000000>;
++};
++
++&gem0 {
++	status = "okay";
++	phy-mode = "rgmii-id";
++	phy-handle = <&ethernet_phy>;
++
++	ethernet_phy: ethernet-phy@0 {
++		reg = <0>;
++		device_type = "ethernet-phy";
++	};
++};
++
++&sdhci0 {
++	status = "okay";
++};
++
++&uart0 {
++	status = "okay";
++};
++
++&usb0 {
++	status = "okay";
++	dr_mode = "host";
++	usb-phy = <&usb_phy0>;
++};
+-- 
+2.24.1
+
