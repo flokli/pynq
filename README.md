@@ -114,8 +114,8 @@ needs to be used:
 `nix-build -A pynqBootFS`, mount and rsync over to partition 1
 
 /root is ArchlinuxARM (for now).
- - Download https://de5.mirror.archlinuxarm.org/os/ArchLinuxARM-armv7-latest.tar.gz and
- - extracted it on the 3rd partition
+ - Download https://de5.mirror.archlinuxarm.org/os/ArchLinuxARM-armv7-latest.tar.gz
+ - extract it on the root partition
  - add `ttyPS0` to `etc/securetty`
  - make sure the file system is mounted rw in /etc/fstab! Otherwise, pam_tally2(login:auth): Couldn't create /var/log/tallylog, and you can't login :-/
    `/etc/fstab`:
