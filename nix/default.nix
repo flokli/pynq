@@ -6,6 +6,7 @@ in {
     buildInputs = with pkgs; [
       gdb
       openocd
+      gnumake
     ];
   };
 }
