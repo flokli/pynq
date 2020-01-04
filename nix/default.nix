@@ -7,6 +7,7 @@ in {
       gdb
       openocd
       gnumake
+      yosys
     ];
   };
 }
