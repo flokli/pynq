@@ -3,15 +3,15 @@ let
   pCross = pkgs.pkgsCross.armv7l-hf-multiplatform;
   kernel = pCross.pynq.kernel;
   kernelXilinx = pCross.pynq.kernelXilinx;
-  bootBin = pCross.pynq.bootBin;
+  uboot = pCross.pynq.uboot;
 in {
   pynqKernel = kernel;
   pynqKernelXilinx = kernelXilinx;
   pynqBootFS = pkgs.callPackage pkgs.makeBootFS {
-    inherit bootBin kernel;
+    inherit uboot kernel;
   };
   pynqBootFSXilinx = pkgs.callPackage pkgs.makeBootFS {
-    inherit bootBin;
+    inherit uboot;
     kernel = pCross.pynq.kernelXilinx;
   };
 }

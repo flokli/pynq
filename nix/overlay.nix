@@ -1,7 +1,7 @@
 self: super: {
   openocd = super.callPackage ./pkgs/openocd.nix {};
 
-  mkXilinxBin = super.callPackage ({ name ? "boot", xilinx-bootgen, bif, runCommand }:
+  mkXilinxBin = super.callPackage ({ name ? "firmware", xilinx-bootgen, bif, runCommand }:
     runCommand (name + ".bin") {
       nativeBuildInputs = [ xilinx-bootgen ];
     } ''
@@ -10,29 +10,13 @@ self: super: {
 
 
   pynq = {
-    # everybody loves blobs, right?
-    fsbl = ./pkgs/fsbl/fsbl.elf;
-
     uboot = super.callPackage ./pkgs/u-boot {};
     kernel = super.callPackage ./pkgs/kernel {};
     kernelXilinx = super.callPackage ./pkgs/kernel-xilinx {};
-
-    bif = super.writeText "pynq.bif" ''
-      image:
-      {
-          [bootloader]${self.pynq.fsbl}
-          ${self.pynq.uboot}/u-boot.elf
-      }
-    '';
-
-    bootBin = self.mkXilinxBin {
-      bif = self.pynq.bif;
-    };
-
     linuxPackages = super.recurseIntoAttrs (super.linuxPackagesFor self.pynq.kernel);
   };
 
-  makeBootFS = { pkgs, runCommand, bootBin, kernel }:
+  makeBootFS = { pkgs, runCommand, uboot, kernel }:
     let
       extlinuxConf = pkgs.writeText "extlinux.cfg" ''
         timeout 10
@@ -48,7 +32,9 @@ self: super: {
       nativeBuildInputs = [ ];
     } ''
       mkdir -p $out
-      cp ${bootBin} $out/boot.bin
+      cp ${uboot}/boot.bin $out/
+      cp ${uboot}/u-boot.img $out/
+      cp ${uboot}/u-boot.dtb $out/system.dtb
       mkdir -p $out/{boot,dtbs,extlinux}
 
       cp ${extlinuxConf} $out/extlinux/extlinux.conf
