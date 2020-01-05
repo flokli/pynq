@@ -136,3 +136,20 @@ We were able to get some somewhat working FPGA bitstreams, but the PS "stalled"
 
 However, some other connections still seemed to be broken, as the kernel
 couldn't actually access its root filesystem anymore - requiring a reboot.
+
+## Build bitstreams
+bitstreams can be produced by invoking xilinx-bootgen with a text file, which
+contains some syntactic sugar and effectively points to the .bit file, which
+might have been built by vivado.
+
+This can be simplified by calling
+
+```
+nix-build nix/default.nix -A pkgs.mkXilinxBin --arg bit ./somepath/foo.bit --arg bif null
+```
+
+If you already have an existing bif, you need to set bit to null and pass bif respectively.
+
+The `Makefile` already has a `%.bin` target, which looks for a `.bit` file in
+that same directory, so invoking `make somepath/foo.bin` will produce a
+`somepath/foo.bin` if a `somepath/foo.bit` exists.

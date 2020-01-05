@@ -25,3 +25,9 @@ flash_xilinx_kmods:
 	sudo umount $(TMP)
 
 flash_xilinx: flash_xilinx_boot flash_xilinx_kmods
+
+
+ROOT_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
+
+%.bin : %.bit
+	nix-build nix/default.nix -A pkgs.mkXilinxBin --arg bit $(ROOT_DIR)/$< --arg bif null -o $@
