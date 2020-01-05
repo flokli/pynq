@@ -1,19 +1,15 @@
 self: super: {
   openocd = super.callPackage ./pkgs/openocd.nix {};
 
-  mkXilinxBin = super.callPackage ({ name ? "firmware", xilinx-bootgen, bif, runCommand }:
-    runCommand (name + ".bin") {
-      nativeBuildInputs = [ xilinx-bootgen ];
-    } ''
-    bootgen -image ${bif} -o i $out
-  '');
-
-
   pynq = {
     uboot = super.callPackage ./pkgs/u-boot {};
     kernel = super.callPackage ./pkgs/kernel {};
     kernelXilinx = super.callPackage ./pkgs/kernel-xilinx {};
     linuxPackages = super.recurseIntoAttrs (super.linuxPackagesFor self.pynq.kernel);
+  };
+
+  mkXilinxBin = { name ? "image", bif, bit }: super.callPackage ./lib/mkXilinxBin.nix {
+    inherit name bif bit;
   };
 
   makeBootFS = { uboot, kernel }:
