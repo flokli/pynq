@@ -126,17 +126,6 @@ needs to be used:
  - copy over ssh pubkey
  - profit!
 
-## Caveats
-We tried programming without Xilinx' PS7 IP Core (yosys only synthesizing,
-Vivado for place and route).
-
-We were able to get some somewhat working FPGA bitstreams, but the PS "stalled"
-- serial didn't react anymore, and we could only get it back by pressing the
-"PROG" switch, which resets the PL and causes DONE to be de-asserted.
-
-However, some other connections still seemed to be broken, as the kernel
-couldn't actually access its root filesystem anymore - requiring a reboot.
-
 ## Build bitstreams
 bitstreams can be produced by invoking xilinx-bootgen with a text file, which
 contains some syntactic sugar and effectively points to the .bit file, which
@@ -153,3 +142,27 @@ If you already have an existing bif, you need to set bit to null and pass bif re
 The `Makefile` already has a `%.bin` target, which looks for a `.bit` file in
 that same directory, so invoking `make somepath/foo.bin` will produce a
 `somepath/foo.bin` if a `somepath/foo.bit` exists.
+
+## Less Vivado <3
+We tried programming without Xilinx' PS7 IP Core (yosys only synthesizing,
+Vivado for place and route).
+
+On first tries, we were able to get some somewhat working FPGA bitstreams, but
+the PS "stalled" - serial didn't react anymore, and we could only get it back
+by pressing the "PROG" switch, which resets the PL and causes DONE to be
+de-asserted. Some things still seemed to be broken, as the kernel couldn't
+actually access its root filesystem anymore - requiring a reboot.
+
+Later, we discovered this can be fixed by simply properly connecting FCLKCLK
+from PS7, and using it as a clock:
+
+```verilog
+PS7 the_PS (
+  .FCLKCLK (fclk)
+);
+```
+
+See
+https://github.com/heijligen/zynq_yosys/commit/f5d0cd952e8a424c94b10077b72aef274e505ead
+for a full example.
+
