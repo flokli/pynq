@@ -182,7 +182,7 @@ yosys -p 'read_verilog +/xilinx/cells_xtra.v path/to/*.v; synth_xilinx -edif bli
 We save the following contents inside `blink.tcl`:
 ```
 read_xdc pynq.xdc
-read_edif $(1).edif
+read_edif blink.edif
 link_design -part xc7z020clg400 -top blink
 place_design
 route_design
