@@ -16,9 +16,9 @@ self: super: {
     linuxPackages = super.recurseIntoAttrs (super.linuxPackagesFor self.pynq.kernel);
   };
 
-  makeBootFS = { pkgs, runCommand, uboot, kernel }:
+  makeBootFS = { uboot, kernel }:
     let
-      extlinuxConf = pkgs.writeText "extlinux.cfg" ''
+      extlinuxConf = super.writeText "extlinux.cfg" ''
         timeout 10
         default PynxOS
 
@@ -28,7 +28,7 @@ self: super: {
         fdt ../dtbs/zynq-pynq-z1.dtb
       '';
     in
-    runCommand "boot-fs" {
+    super.runCommand "boot-fs" {
       nativeBuildInputs = [ ];
     } ''
       mkdir -p $out

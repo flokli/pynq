@@ -7,10 +7,10 @@ let
 in {
   pynqKernel = kernel;
   pynqKernelXilinx = kernelXilinx;
-  pynqBootFS = pkgs.callPackage pkgs.makeBootFS {
+  pynqBootFS = pkgs.makeBootFS {
     inherit uboot kernel;
   };
-  pynqBootFSXilinx = pkgs.callPackage pkgs.makeBootFS {
+  pynqBootFSXilinx = pkgs.makeBootFS {
     inherit uboot;
     kernel = pCross.pynq.kernelXilinx;
   };
