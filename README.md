@@ -166,3 +166,42 @@ See
 https://github.com/heijligen/zynq_yosys/commit/f5d0cd952e8a424c94b10077b72aef274e505ead
 for a full example.
 
+As written there, this approach does do synthesis with Yosys, and invokes
+Vivado only for place & route. As yosys already has limited support to do
+xilinx bitstream generation, chances are high it'll eventually get a backend
+for the zynq-based ones too.
+
+### Synthesize with Yosys:
+
+```
+yosys -p 'read_verilog +/xilinx/cells_xtra.v path/to/*.v; synth_xilinx -edif blink.edif -top blink
+```
+
+### Create tcl script to be executed by vivado:
+
+We save the following contents inside `blink.tcl`:
+```
+read_xdc pynq.xdc
+read_edif $(1).edif
+link_design -part xc7z020clg400 -top blink
+place_design
+route_design
+write_bitstream -force blink.bit
+```
+
+The `pynq.xdc` comes from [the Digilent
+Website](https://reference.digilentinc.com/reference/programmable-logic/pynq-z1/start),
+with used ports commented in.
+
+
+### Invoke Vivado
+This starts Vivado headless in batch mode (not project mode, headless) to
+execute above tcl script:
+
+```
+vivado -nolog -nojournal -mode batch -source blink.tcl
+```
+
+Afterwards, there should be a blink.bit.
+You can use the Makefile from this repo to produce a `blink.bin`, which can be
+programmed to the running device though FPGA manager as described above.
