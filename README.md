@@ -1,5 +1,27 @@
 # pynq / zynq debug environment
 
+## Credits
+The research and work was done together with Thomas Heijligen!
+
+Without working together there were no chance to get so far with upstream and
+open source components. Contributing to upstream Projects is a benefit for
+everyone. Not doing it is pain for for all doing the same work again.  When not
+just simply clicking the ip cores together in Vivado, one needs a much deeper
+understanding of the Zynq system and FPGA bitstream creation, at least until
+sufficient documentation has been written.
+
+Open tooling make it much easier to understand these internals and work with
+it.
+
+Thanks to:
+	David Sahah @fpga_dave
+	Claire /Clifford Wold @oe1cxw
+	Karol Gugala @KGugala
+	Dan Gisselquist @ZipCPU
+	Tristan Gingold
+
+## About this repository
+
 This repository uses nix to provide a reproducible working environment. Please
 follow https://nixos.org/nix to install it.
 
