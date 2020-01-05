@@ -24,4 +24,4 @@ flash_xilinx_kmods:
 	sudo rsync -va $(shell nix-build -A pynqKernelXilinx --no-out-link)/lib/modules/$(shell nix eval --raw -f . pynqKernelXilinx.modDirVersion) $(TMP) --delete
 	sudo umount $(TMP)
 
-make flash_xilinx: flash_xilinx_boot flash_xilinx_kmods
+flash_xilinx: flash_xilinx_boot flash_xilinx_kmods
