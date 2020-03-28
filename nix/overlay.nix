@@ -1,5 +1,4 @@
 self: super: {
-  bluespec-bsc = super.callPackage ./pkgs/bluespec-bsc {};
   openocd = super.callPackage ./pkgs/openocd.nix {};
 
   pynq = {
