@@ -1,0 +1,36 @@
+From 307e78c6a1c135b5d610dd742ca2683d2f1c699c Mon Sep 17 00:00:00 2001
+From: Florian Klink <flokli@flokli.de>
+Date: Sun, 29 Mar 2020 01:21:26 +0100
+Subject: [PATCH] v4l: xilinx: multi-scaler: fix build
+
+Use %pa[p] as printk format specifier for res->start, which is a
+resource_size_t, which is basically a phys_addr_t
+(and documented in Documentation/core-api/printk-formats.rst)
+
+```
+drivers/media/platform/xilinx/xilinx-multi-scaler.c:2174:15: warning: format '%llx' expects argument of type 'long long unsigned int', but argument 4 has type 'resource_size_t' {aka 'unsigned int'} [-Wformat=]
+2174 | dev_dbg(dev, "IO Mem 0x%llx mapped at %p\n", res->start, xm2msc->regs);
+| ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
+
+Signed-off-by: Florian Klink <flokli@flokli.de>
+---
+ drivers/media/platform/xilinx/xilinx-multi-scaler.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/media/platform/xilinx/xilinx-multi-scaler.c b/drivers/media/platform/xilinx/xilinx-multi-scaler.c
+index a111ae5bb8a4..b7624cbac93d 100644
+--- a/drivers/media/platform/xilinx/xilinx-multi-scaler.c
++++ b/drivers/media/platform/xilinx/xilinx-multi-scaler.c
+@@ -2171,7 +2171,7 @@ static int xm2msc_parse_of(struct platform_device *pdev,
+ 	if (IS_ERR((__force void *)xm2msc->regs))
+ 		return PTR_ERR((__force const void *)xm2msc->regs);
+ 
+-	dev_dbg(dev, "IO Mem 0x%llx mapped at %p\n", res->start, xm2msc->regs);
++	dev_dbg(dev, "IO Mem %pa[p] mapped at %p\n", res->start, xm2msc->regs);
+ 
+ 	ret = of_property_read_u32(node, "xlnx,max-chan",
+ 				   &xm2msc->max_chan);
+-- 
+2.25.1
+

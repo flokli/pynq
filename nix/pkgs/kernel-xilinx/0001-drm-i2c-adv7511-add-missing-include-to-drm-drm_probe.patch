@@ -1,0 +1,35 @@
+From 398cf5848c5479832abe4390962392096f72d1fa Mon Sep 17 00:00:00 2001
+From: Florian Klink <flokli@flokli.de>
+Date: Sun, 29 Mar 2020 01:39:12 +0100
+Subject: [PATCH] drm/i2c: adv7511: add missing include to
+ drm/drm_probe_helper.h
+
+Otherwise, the compiler complains about not being able to find the
+`drm_helper_hpd_irq_event` symbol:
+
+```
+drivers/gpu/drm/i2c/adv7511.c: In function 'adv7511_irq_process':
+drivers/gpu/drm/i2c/adv7511.c:450:3: error: implicit declaration of function 'drm_helper_hpd_irq_event' [-Werror=implicit-function-declaration]
+  450 |   drm_helper_hpd_irq_event(adv7511->encoder->dev);
+      |   ^~~~~~~~~~~~~~~~~~~~~~~~
+
+Signed-off-by: Florian Klink <flokli@flokli.de>
+---
+ drivers/gpu/drm/i2c/adv7511.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/gpu/drm/i2c/adv7511.c b/drivers/gpu/drm/i2c/adv7511.c
+index 523f15664462..3ebbe76972cf 100644
+--- a/drivers/gpu/drm/i2c/adv7511.c
++++ b/drivers/gpu/drm/i2c/adv7511.c
+@@ -17,6 +17,7 @@
+ #include <drm/drm_crtc_helper.h>
+ #include <drm/drm_edid.h>
+ #include <drm/drm_encoder_slave.h>
++#include <drm/drm_probe_helper.h>
+ 
+ #include "adv7511.h"
+ 
+-- 
+2.25.1
+

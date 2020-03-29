@@ -4,22 +4,31 @@ buildLinux rec {
   src = fetchFromGitHub {
     owner = "Xilinx";
     repo = "linux-xlnx";
-    rev = "efb8afa6517cc706ac1a722ab5551984c15932b2";
-    sha256 = "03rq2izqns5vksby8gq9b0fkm3qhl5pgy30373bhx34lvqrdzgbj";
+    rev = "aa3f6d41fc14b1a11ae450bab22fecd249451bac";
+    sha256 = "1pbr4qcy80m9f54idarx2zm3v4vb178mx88b4sq5wa2l6572wm67";
   };
 
 
-  version = "4.19.0";
-  modDirVersion = "4.19.0-xilinx";
+  version = "5.4.0";
+  modDirVersion = "5.4.0-xilinx";
 
   # branchVersion needs to be x.y.
-  extraMeta.branch = "4.19";
+  extraMeta.branch = "5.4";
 
   defconfig = "xilinx_zynq_defconfig";
 
   kernelPatches = [{
     name = "0001-ARM-dts-pynq-Add-Digilent-Zynq-PYNQ-Z1-Board.patch";
     patch = ./0001-ARM-dts-pynq-Add-Digilent-Zynq-PYNQ-Z1-Board.patch;
+  } {
+    name = "0001-v4l-xilinx-multi-scaler-fix-build.patch";
+    patch = ./0001-v4l-xilinx-multi-scaler-fix-build.patch;
+  } {
+    name = "0001-drm-i2c-adv7511-add-missing-include-to-drm-drm_probe.patch";
+    patch = ./0001-drm-i2c-adv7511-add-missing-include-to-drm-drm_probe.patch;
+  } {
+    name = "0001-xilinx-dma-fix-some-typos-in-the-Kconfig-help-texts.patch";
+    patch = ./0001-xilinx-dma-fix-some-typos-in-the-Kconfig-help-texts.patch;
   }];
 
   # Xilinx' kernel doesn't even properly build entirely:
@@ -63,16 +72,19 @@ buildLinux rec {
   # so we disable problematic modules, great!
   extraConfig = ''
     # XILINX <3
-    DRM_XILINX_DP n
-    DRM_XILINX_DP_SUB n
-    DRM_XILINX_MIPI_DSI n
-    DRM_XILINX_SDI n
+    DRM_XLNX n
     XILINX_APF n
     XILINX_DMA_APF n
 
     SPI_CADENCE_QUADSPI n
     COMMON_CLK_SI5324 n
 
+    # ERROR: "__aeabi_ldivmod" [drivers/rtc/rtc-zynqmp.ko] undefined!
+    # ERROR: "__aeabi_uldivmod" [drivers/rtc/rtc-zynqmp.ko] undefined!
+    RTC_DRV_ZYNQMP n
+
+    # drivers/misc/xilinx_flex_pm.c:356:22: error: 'struct xflex_dev_info' has no member named 'lock'
+    XILINX_FLEX_PM n
 
     FRAME_POINTER y
     KGDB y
