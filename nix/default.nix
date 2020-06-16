@@ -1,5 +1,12 @@
 let
-  pkgs = import ./pkgs.nix;
+  sources = import ./sources.nix;
+
+  pkgs = import sources.nixpkgs {
+    config = {};
+    overlays = [
+      (import ./overlay.nix)
+    ];
+  };
 
   profileEnv = pkgs.writeTextFile {
     name = "profile-env";
@@ -17,8 +24,9 @@ in {
     paths = with pkgs; [
       bluespec
       gdb
-      openocd
       gnumake
+      niv
+      openocd
       yosys
 
       profileEnv
