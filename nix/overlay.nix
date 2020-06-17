@@ -1,6 +1,8 @@
 self: super: {
   openocd = super.callPackage ./pkgs/openocd.nix {};
 
+  vivado = super.callPackage ./pkgs/vivado {};
+
   pynq = {
     uboot = super.callPackage ./pkgs/u-boot {};
     kernel = super.callPackage ./pkgs/kernel {};
