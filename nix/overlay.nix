@@ -3,6 +3,19 @@ self: super: {
 
   vivado = super.callPackage ./pkgs/vivado {};
 
+  # we need a later ghdl containing the logic_32 struct
+  # https://github.com/ghdl/ghdl-yosys-plugin/issues/117
+  ghdl = super.ghdl.overrideAttrs (old : {
+    src = super.fetchFromGitHub {
+      owner = "ghdl";
+      repo = "ghdl";
+      rev = "18a71a430a7cfc460e9b013b37465ba7a9e32b1e";
+      sha256 = "1wqf86xlgxl4k56x2zlaihh8l48j680l7b9hly6sdzv1rk9wx4jx";
+    };
+  });
+
+  ghdl-yosys-plugin = super.callPackage ./pkgs/ghdl-yosys-plugin {};
+
   pynq = {
     uboot = super.callPackage ./pkgs/u-boot {};
     kernel = super.callPackage ./pkgs/kernel {};
