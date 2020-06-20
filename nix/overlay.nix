@@ -16,6 +16,8 @@ self: super: {
 
   ghdl-yosys-plugin = super.callPackage ./pkgs/ghdl-yosys-plugin {};
 
+  bit2bitbin = super.callPackage ./pkgs/bit2bitbin {};
+
   linux_pynq = super.callPackage ./pkgs/linux-pynq {};
   linux_pynq_xilinx = super.callPackage ./pkgs/linux-pynq-xilinx {};
 

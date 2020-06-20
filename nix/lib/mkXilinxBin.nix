@@ -1,26 +1,17 @@
-{
-  writeText
+{ writeText
 , runCommand
-, xilinx-bootgen
-, name ? "image"
-}:
+, bit2bitbin }:
 
-{ bif ? null
-, bit ? null
-}:
+{ bit
+, name }:
 
-assert bit != null -> bif == null;
-assert bit == null -> bif != null;
+# Uses bit2bin to turn a .bit file into a byte-swapped .bin file, to be loaded
+# by the Xilinx-flavoured Linux kernel.
+# Is placed into $out/lib/firmware, to facilitate usage from inside NixOS.
 
-let
-  _bif =
-    if bif != null then bif
-    else (writeText "image.bif" ''
-  image : {
-    ${bit}
-  }
-  '');
-
-in runCommand (name + ".bin") {
-  nativeBuildInputs = [ xilinx-bootgen ];
-} "bootgen -image ${_bif} -o i $out"
+runCommand ("bin") {
+  nativeBuildInputs = [ bit2bitbin ];
+} ''
+  mkdir -p $out/lib/firmware
+  bit2bitbin ${bit} $out/lib/firmware/${name}
+''

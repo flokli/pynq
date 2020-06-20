@@ -12,6 +12,7 @@ in rec {
   };
 
   pynqBlinkBin = pkgs.mkXilinxBin {
+    name = "blink.bit";
     bit = pkgs.mkXilinxBit {
       toplevelName = "blink";
       src = ./examples/blink;
