@@ -25,7 +25,6 @@ in {
       bluespec
       gdb
       gnumake
-      niv
       openocd
       yosys
 
