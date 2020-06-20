@@ -3,7 +3,9 @@
 , runCommand
 , xilinx-bootgen
 , name ? "image"
-, bif ? null
+}:
+
+{ bif ? null
 , bit ? null
 }:
 
