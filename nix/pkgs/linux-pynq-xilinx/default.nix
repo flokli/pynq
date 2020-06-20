@@ -1,4 +1,7 @@
-{ buildLinux, fetchFromGitHub }:
+{ buildLinux
+, fetchFromGitHub
+, ...
+}:
 
 buildLinux rec {
   src = fetchFromGitHub {

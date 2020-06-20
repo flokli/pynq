@@ -1,4 +1,7 @@
-{ buildLinux, fetchurl }:
+{ buildLinux
+, fetchurl
+, ...
+}:
 
 buildLinux rec {
   version = "5.4.7";

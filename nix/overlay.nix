@@ -16,16 +16,15 @@ self: super: {
 
   ghdl-yosys-plugin = super.callPackage ./pkgs/ghdl-yosys-plugin {};
 
-  pynq = {
-    uboot = super.callPackage ./pkgs/u-boot {};
-    kernel = super.callPackage ./pkgs/kernel {};
-    kernelXilinx = super.callPackage ./pkgs/kernel-xilinx {};
-    linuxPackages = super.recurseIntoAttrs (super.linuxPackagesFor self.pynq.kernel);
-  };
+  linux_pynq = super.callPackage ./pkgs/linux-pynq {};
+  linux_pynq_xilinx = super.callPackage ./pkgs/linux-pynq-xilinx {};
 
-  mkXilinxBin = { name ? "image", bif, bit }: super.callPackage ./lib/mkXilinxBin.nix {
-    inherit name bif bit;
-  };
+  linuxPackages_pynq = self.linuxPackagesFor self.linux_pynq;
+  linuxPackages_pynq_xilinx = self.linuxPackagesFor self.linux_pynq_xilinx;
+
+  ubootPynq = super.callPackage ./pkgs/u-boot-pynq {};
+
+  mkXilinxBin = super.callPackage ./lib/mkXilinxBin.nix { };
 
   makeBootFS = { uboot, kernel }:
     let
