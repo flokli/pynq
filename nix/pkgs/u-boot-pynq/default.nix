@@ -5,15 +5,17 @@ buildUBoot {
     domain = "gitlab.denx.de";
     owner = "u-boot";
     repo = "u-boot";
-    rev = "4b75aa5aa78768fc81b782ee51d960dfed76f6e1";
-    sha256 = "1s1i7jjx4g999b2h5dp7p3a5ahgg002iip7h0ah14761wx1xizv1";
+    rev = "2b8692bac1e8795cbb87b0d00213fd193409851d";
+    sha256 = "0i73l22cs0pf4vaa46cwa590d6wc5zqi5gwmchmx3k60d0fdbcyv";
   };
   patches = [
     ./0001-ARM-zynq-add-Digilent-Zynq-PYNQ-Z1.patch
-    ./0001-ARM-dts-xilinx-Fix-I2C-and-SPI-bus-warnings.patch
-    ./0001-pynq-add-ps7_init_gpl.c.patch
+    ./0002-pynq-add-ps7_init_gpl.c.patch
   ];
-  defconfig = "zynq_pynq_z1_defconfig";
+  defconfig = "xilinx_zynq_virt_defconfig";
+  preConfigure = ''
+    export DEVICE_TREE=zynq-pynq-z1
+  '';
   extraMeta.platforms = ["armv7l-linux"];
   filesToInstall = ["spl/boot.bin" "u-boot.img" "u-boot.dtb"];
 }

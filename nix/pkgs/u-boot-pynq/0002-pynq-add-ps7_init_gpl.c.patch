@@ -1,7 +1,7 @@
-From 52cc118672ce2032619dea49e2ef8761df169d23 Mon Sep 17 00:00:00 2001
+From a0961822fb511f5fee3d0dc9700e1e9b7b7538a3 Mon Sep 17 00:00:00 2001
 From: Thomas Heijligen <src@posteo.de>
 Date: Sat, 21 Dec 2019 02:54:11 +0100
-Subject: [PATCH] pynq: add ps7_init_gpl.c
+Subject: [PATCH 2/2] pynq: add ps7_init_gpl.c
 
 Signed-off-by: Thomas Heijligen <src@posteo.de>
 ---
@@ -12190,5 +12190,5 @@ index 0000000000..8a52b32c63
 +}
 +
 -- 
-2.24.1
+2.27.0
 
