@@ -3,12 +3,12 @@
         "branch": "master",
         "description": "A read-only mirror of NixOS/nixpkgs tracking the released channels. Send issues and PRs to",
         "homepage": "https://github.com/NixOS/nixpkgs",
-        "owner": "NixOS",
+        "owner": "flokli",
         "repo": "nixpkgs",
-        "rev": "5c9d97b14c7690337ee6425cbc82082bf93e25d8",
-        "sha256": "06c7sb2i89wzrqnh1gn096j9z0y31gmdr37h6vr2i24np5z9jixp",
+        "rev": "81d039ffd999f959eb3c7821dcfd6d04abd22041",
+        "sha256": "10qhlxnanjl5rm4m5zz6k8wv0dm3w19waxvcm174a4m5dz2l8xcl",
         "type": "tarball",
-        "url": "https://github.com/NixOS/nixpkgs/archive/5c9d97b14c7690337ee6425cbc82082bf93e25d8.tar.gz",
+        "url": "https://github.com/flokli/nixpkgs/archive/81d039ffd999f959eb3c7821dcfd6d04abd22041.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }
