@@ -49,6 +49,10 @@ in {
   services.udisks2.enable = false; # pulls in btrfs, #50925
   security.polkit.enable = false; # pulls in gobject-introspection
 
+  environment.systemPackages = [
+    pkgs.devmem2
+  ];
+
   services.openssh.enable = true;
   users.users.root.openssh.authorizedKeys.keys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPTVTXOutUZZjXLB0lUSgeKcSY/8mxKkC0ingGK1whD2 flokli"
