@@ -54,4 +54,15 @@ in {
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPTVTXOutUZZjXLB0lUSgeKcSY/8mxKkC0ingGK1whD2 flokli"
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEinGNp/dMkIT9cOuLepE4VJp5WLI+tvoRzpzStL2hkd heijligen"
   ];
+
+  systemd.services."fpga-load" = {
+    enable = true;
+    script = ''
+      echo "loading bitstream ${pynqBlinkBin}…"
+      echo "blink.bin" > /sys/class/fpga_manager/fpga0/firmware
+    '';
+    serviceConfig.Type = "oneshot";
+    restartTriggers = [ pynqBlinkBin ];
+    wantedBy = [ "multi-user.target" ];
+  };
 }
