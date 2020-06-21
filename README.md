@@ -1,5 +1,214 @@
 # pynq / zynq debug environment
 
+## About this repository
+
+This repository uses nix to provide a reproducible working environment. Please
+follow https://nixos.org/nix to install it.
+
+It is also necessary to install [direnv](https://direnv.net) to enter the
+environment.
+
+## Building a PYNQ
+This code supports building full NixOS images with Nix.
+
+The system configuration is described in `machines/pynq/configuration.nix`, and can be built with the following commands (from the repository root):
+
+### SD Image
+`nix-build -A pynq.sdImage` will build an image, that can be `dd`'ed to the
+sdcard.
+
+Use something like
+```
+zstdcat result/sd-image/nixos-sd-image-20.09pre-git-armv7l-linux.img.zst | dd bs=1M of=/dev/mmcblk0 status=progress
+```
+
+to write to the SD-Card.
+
+#### Partition Layout
+The NixOS tooling uses the following layout:
+
+ - `FIRMWARE`, 30M, `vfat`:
+    - `boot.bin`, containing initial chip initialization code.
+    - `u-boot.img`, containing u-boot
+    - `system.dtb`, containing u-boot's device tree file
+ - `NIXOS_SD`, `ext4`:
+    - `/boot/extlinux/extlinux.conf`
+       containing the u-boot boot loader entries
+    - `/boot/firmware`
+      (empty, that's where the `FIRMWARE` partition is mounted to)
+    - `/boot/nixos`
+      containing the zImage, dtbs and initrd of all kernels referred in
+      `extlinux.conf`.
+
+#### Bootloader
+We ship `pynqUboot` which contains two patches on top of mainline u-boot adding
+support for `zynq-pynq-z1`.
+
+Those still need to be mainlined.
+They aren't yet, as SPI doesn't yet work (probably okay), but the
+`ps7_init_gpl.c` also contains some lines from another board that might be
+wrong.
+
+This needs to be cross-referenced with their TRM.
+
+For some reason, all the Zynq targets don't seem to properly detect their
+boards, even though we set DEVICE_TREE as described in
+https://gitlab.denx.de/u-boot/u-boot/-/commit/f7c6ee7fe7bcc387de4c92300f46cb725b845b53
+.
+
+This means instead of being able to use FDTDIR in extlinux and letting the
+bootloader pick the right `.dtb` depending on what board it is, we need to
+explicitly configure one via `FDT`. Work to make this possible in NixOS's
+`extlinux` module has been sent upstream at
+https://github.com/NixOS/nixpkgs/pull/91195.
+
+### Incremental switching
+This also supports switching already existing systems to a new configuration.
+
+ - Run `nix-build -A pynq.toplevel` to obtain a new system closure (`$newClosure`)
+ - Use `nix-copy-closure --to root@$pynqIP /nix/store/…` to copy the closure to
+ - the target system
+ - Set the new system profile by running
+   `nix-env --profile /nix/var/nix/profiles/system --set $newClosure`
+ - Activate it, by running `$newClosure/bin/switch-to-configuration switch`.
+   Services referring to old configuration are automatically restarted. Kernel
+   changes obviously require a reboot.
+
+### Kernels
+#### "Official" Xilinx Kernel
+We provide Xilinx' official kernel (together with above mentioned device tree
+file) at `linux_pynq_xilinx`, kernel modules at `linuxPackages_pynq_xilinx`.
+
+As NixOS builds an `allmodyes` kernel by default, and uses a more recent
+compiler toolchain than Xilinx, we found some issues and incompatibilities in
+their kernel not detected by their test suite.
+
+Some patches have been upstreamed, some other issues worked around by disabling
+the offending kernel modules - see the git log at
+https://github.com/Xilinx/linux-xlnx and nix/pkgs/linux-pynq for details.
+
+When it's running, bitstreams from the kernels `firmware` folder can be
+flashed by running
+
+```
+echo filename > /sys/class/fpga_manager/fpga0/firmware
+```
+
+#### Mainline Kernel (not recommended for now)
+We provide a pretty recent mainline Linux Kernel, with the PYNQ-specific
+devicetree file and more recent patches from xilinx to load an FPGA bitstream
+via DEBUGFS in `./nix/pkgs/kernel/`.
+
+It is available at `linux_pynq`, kernel modules at `linuxPackages_pynq`.
+
+It should allow to flash bitstreams as simple as
+
+```
+cat path/to.bin > /sys/kernel/debug/fpga/fpga0/load
+```
+
+However, it seems loading bitstreams currently doesn't see to work. The kernel
+only says
+
+```
+[   39.116802] fpga_manager fpga0: Error after writing image data to FPGA
+[   39.123388] fpga_manager fpga0: fpga_mgr_load returned with value -110
+[   39.123388] 
+dd: writing to '/sys/kernel/debug/fpga/fpga0/load': Connection timed out
+1+0 records in
+0+0 records out
+0 bytes copied, 2.52188 s, 0.0 kB/s
+```
+
+and doesn't load the bitstream.
+
+However, if we previously booted a Xilinx kernel and programmed a bitstream via
+that, then did a soft reset and booted into the mainline kernel, we were able
+to program via that method.
+
+It might be some hardware state persistent across reboots that's missing from
+our `ps7_init_gpl` code, but present in Xilinx' kernel - needs to be
+investigated further.
+
+## Building FPGA Firmware
+Build FPGA bitstreams usually is not fun, requires proprietary tools, and is a
+continuous source of errors.
+
+This repo contains some helper functions meant to ease development - only the
+location to some `.v` files needs to be specified, and Nix takes care of
+providing all the required toolchains to build, synthesize, place and route,
+all provided by and sanboxed with Nix.
+
+See `machines/pynq/examples/blink` for an example, and
+`machines/pynq/configuration.nix` how this can be used to be spliced into a
+NixOS system.
+
+### Tooling
+#### `mkXilinxBit`
+This consumes `src` pointing to some Verilog code (and optionally
+`toplevelName`, which defaults to "main").
+
+It will use `yosys` to synthesize this to `.edif` format, then use `vivado` to
+place and route it to a `.bit` file - which will most likely be consumed by
+`mkXilinxBin`.
+
+#### `mkXilinxBin`
+This consumes a `.bit` file and produces a `.bin` file in a `lib/firmware`
+folder - ready for consumption by the `hardware.firmware` attribute.
+
+### IP Cores
+We tried programming without Xilinx' PS7 LogiCORE IP wrapper for the hard core.
+
+Instead, we're using the primitives provided by yosys.
+
+On first tries, we were able to get some somewhat working FPGA bitstreams, but
+the PS "stalled" - serial didn't react anymore, and we could only get it back
+by pressing the "PROG" switch, which resets the PL and causes DONE to be
+de-asserted. Some things still seemed to be broken, as the kernel couldn't
+actually access its root filesystem anymore - requiring a reboot.
+
+Later, we discovered this can be fixed by simply properly connecting FCLKCLK
+from PS7, and using it as a clock:
+
+```verilog
+PS7 the_PS (
+  .FCLKCLK (fclk)
+);
+```
+
+## Debugging
+### OpenOCD
+Nix provides a custom build of OpenOCD (mostly master), because the latest
+OpenOCD release was years ago and doesn't work at all.
+
+There's also a pynq-specific openocd config file at `openocd/zynq.conf`.
+
+From inside the environment, invoke `openocd` like this:
+
+```
+openocd -d -f openocd/pynq.cfg
+```
+
+If you don't have the appropriate udev rules installed, you might need to run
+it as root.
+
+### GDB
+Nix provides a GDB multiarch binary. You should then be able run it simply by
+invoking `gdb`.
+
+Once in gdb, you want to invoke something like the following command sequence:
+
+```
+set pagination off
+file /path/to/elf
+target extended-remote :3333
+monitor halt
+load
+layout asm
+layout src
+layout split
+```
+
 ## Credits
 The research and work was done together with Thomas Heijligen!
 
@@ -19,209 +228,3 @@ Thanks to:
 	Karol Gugala @KGugala
 	Dan Gisselquist @ZipCPU
 	Tristan Gingold
-
-## About this repository
-
-This repository uses nix to provide a reproducible working environment. Please
-follow https://nixos.org/nix to install it.
-
-It is also necessary to install [direnv](https://direnv.net) to enter the
-environment.
-
-## OpenOCD
-Nix provides a custom build of OpenOCD (mostly master), because the latest
-OpenOCD release was years ago and doesn't work at all.
-
-There's also a pynq-specific openocd config file at `openocd/zynq.conf`.
-
-From inside the environment, invoke `openocd` like this:
-
-```
-openocd -d -f openocd/pynq.cfg
-```
-
-If you don't have the appropriate udev rules installed, you might need to run
-it as root.
-
-## GDB
-Nix provides a GDB multiarch binary. You should then be able run it simply by
-invoking `gdb`.
-
-Once in gdb, you want to invoke something like the following command sequence:
-
-```
-set pagination off
-file /path/to/elf
-target extended-remote :3333
-monitor halt
-load
-layout asm
-layout src
-layout split
-```
-
-## U-boot
-`nix/pkgs/u-boot provides a recent u-boot with two patches on top:
- - `0001-ARM-dts-xilinx-Fix-I2C-and-SPI-bus-warnings.patch`
-   nailcare to shut up some warnings, already sent upstream at
-   https://lists.denx.de/pipermail/u-boot/2019-December/393892.html
- - `0001-ARM-zynq-add-Digilent-Zynq-PYNQ-Z1.patch`
-   adds a PYNQ devicetree file to u-boot.
-   TODO: This isn't yet sent upstream, as SPI or other means to store the
-   u-boot env don't work yet.
-
-It also seems with the refactor to defconfigs, uboot's mainline the dtb
-filename generation got messed up.
-
-In a nice world, one could simply set `fdtdir` to a location containing
-multiple ftds, and u-boot would read from `${soc}-${board}.dtb` (in our case
-`zynq-pynq-z1.dtb`).
-However, when starting uboot, currently `$soc` and `$board` currently both
-contain `zynq`, and it seems `$board` can't really be set from the defconfigs.
-
-For now, we set the `fdtfile` directly in extlinux config.
-
-## Linux Kernel
-### Mainline
-We provide a pretty recent mainline Linux Kernel, with the PYNQ-specific
-devicetree file and more recent patches from xilinx to load an FPGA bitstream
-via DEBUGFS in `./nix/pkgs/kernel/`.
-
-This allows to flash bitstreams as simple as
-
-```
-dd of=/sys/kernel/debug/fpga/fpga0/load bs=26M if=path/to.bin
-```
-
-However, it seems something with initial hardware setup is somewhat broken.
-Sometimes the kernel only says
-
-```
-[   39.116802] fpga_manager fpga0: Error after writing image data to FPGA
-[   39.123388] fpga_manager fpga0: fpga_mgr_load returned with value -110
-[   39.123388] 
-dd: writing to '/sys/kernel/debug/fpga/fpga0/load': Connection timed out
-1+0 records in
-0+0 records out
-0 bytes copied, 2.52188 s, 0.0 kB/s
-```
-
-and doesn't load the bitstream.
-
-However, if we previously booted a Xilinx kernel and programmed a bitstream via
-that, then did a soft reset and booted into the mainline kernel, we were able
-to program via that method.
-
-### "Official" Xilinx Kernel
-We also provide Xilinx' official kernel (together with above mentioned device
-tree file). It lives in `./nix/pkgs/kernel-xilinx`.
-
-When it's running, bitstreams can be flashed by copying the `.bin` to
-`/lib/firmware`, then running
-
-```
-echo filename > /sys/class/fpga_manager/fpga0/firmware
-```
-
-## Partition Layout, SD Card Image
-The initial bootcode only understands `dos` partitions, so the following layout
-needs to be used:
- - /boot: 500M, vfat
- - swap: 10G, swap
- - /: rest, ext4
-
-/boot is built via nix:
-`nix-build -A pynqBootFS`, mount and rsync over to partition 1
-
-/root is ArchlinuxARM (for now).
- - Download https://de5.mirror.archlinuxarm.org/os/ArchLinuxARM-armv7-latest.tar.gz
- - extract it on the root partition
- - add `ttyPS0` to `etc/securetty`
- - make sure the file system is mounted rw in /etc/fstab! Otherwise, pam_tally2(login:auth): Couldn't create /var/log/tallylog, and you can't login :-/
-   `/etc/fstab`:
-   > /dev/root / auto auto 0 0
-   > /dev/mmcblk0p1 /boot auto auto 0 0
-   > /dev/mmcblk0p2 none swap sw 0 0
- - copy over kernel modules from `$(nix-build -A pynqKernel)/lib/modules`
- - copy over ssh pubkey
- - profit!
-
-## Build bitstreams
-bitstreams can be produced by invoking xilinx-bootgen with a text file, which
-contains some syntactic sugar and effectively points to the .bit file, which
-might have been built by vivado.
-
-This can be simplified by calling
-
-```
-nix-build nix/default.nix -A pkgs.mkXilinxBin --arg bit ./somepath/foo.bit --arg bif null
-```
-
-If you already have an existing bif, you need to set bit to null and pass bif respectively.
-
-The `Makefile` already has a `%.bin` target, which looks for a `.bit` file in
-that same directory, so invoking `make somepath/foo.bin` will produce a
-`somepath/foo.bin` if a `somepath/foo.bit` exists.
-
-## Less Vivado <3
-We tried programming without Xilinx' PS7 IP Core (yosys only synthesizing,
-Vivado for place and route).
-
-On first tries, we were able to get some somewhat working FPGA bitstreams, but
-the PS "stalled" - serial didn't react anymore, and we could only get it back
-by pressing the "PROG" switch, which resets the PL and causes DONE to be
-de-asserted. Some things still seemed to be broken, as the kernel couldn't
-actually access its root filesystem anymore - requiring a reboot.
-
-Later, we discovered this can be fixed by simply properly connecting FCLKCLK
-from PS7, and using it as a clock:
-
-```verilog
-PS7 the_PS (
-  .FCLKCLK (fclk)
-);
-```
-
-See
-https://github.com/heijligen/zynq_yosys/commit/f5d0cd952e8a424c94b10077b72aef274e505ead
-for a full example.
-
-As written there, this approach does do synthesis with Yosys, and invokes
-Vivado only for place & route. As yosys already has limited support to do
-xilinx bitstream generation, chances are high it'll eventually get a backend
-for the zynq-based ones too.
-
-### Synthesize with Yosys:
-
-```
-yosys -p 'read_verilog +/xilinx/cells_xtra.v path/to/*.v; synth_xilinx -edif blink.edif -top blink
-```
-
-### Create tcl script to be executed by vivado:
-
-We save the following contents inside `blink.tcl`:
-```
-read_xdc pynq.xdc
-read_edif blink.edif
-link_design -part xc7z020clg400 -top blink
-place_design
-route_design
-write_bitstream -force blink.bit
-```
-
-The `pynq.xdc` comes from [the Digilent
-Website](https://reference.digilentinc.com/reference/programmable-logic/pynq-z1/start),
-with used ports commented in.
-
-
-### Invoke Vivado
-This starts Vivado headless in batch mode (not project mode, headless) to
-execute above tcl script:
-
-```
-vivado -nolog -nojournal -mode batch -source blink.tcl
-```
-
-Afterwards, there should be a blink.bit.
-You can use the Makefile from this repo to produce a `blink.bin`, which can be
-programmed to the running device though FPGA manager as described above.

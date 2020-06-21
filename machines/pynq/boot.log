@@ -1,0 +1,511 @@
+```
+U-Boot SPL 2020.07-rc4 (Jan 01 1970 - 00:00:01 +0000)
+Trying to boot from MMC1
+spl_load_image_fat: error reading image uImage, err - -2
+
+
+U-Boot 2020.07-rc4 (Jan 01 1970 - 00:00:01 +0000)
+
+CPU:   Zynq 7z020
+Silicon: v3.1
+Model: Digilent Zynq PYNQ Z1
+DRAM:  ECC disabled 512 MiB
+Flash: 0 Bytes
+NAND:  0 MiB
+MMC:   mmc@e0100000: 0
+Loading Environment from SPI Flash... SF: Detected s25fl128s with page size 256 Bytes, erase size 64 KiB, total 16 MiB
+*** Warning - bad CRC, using default environment
+
+In:    serial@e0000000
+Out:   serial@e0000000
+Err:   serial@e0000000
+Net:   
+ZYNQ GEM: e000b000, mdio bus e000b000, phyaddr 0, interface rgmii-id
+
+Warning: ethernet@e000b000 (eth0) using random MAC address - 5e:55:f4:5d:e5:50
+eth0: ethernet@e000b000
+Hit any key to stop autoboot:  0 
+switch to partitions #0, OK
+mmc0 is current device
+Scanning mmc 0:2...
+Found /boot/extlinux/extlinux.conf
+Retrieving file: /boot/extlinux/extlinux.conf
+875 bytes read in 21 ms (40 KiB/s)
+1:	NixOS - Default
+Retrieving file: /boot/extlinux/../nixos/wghn3pvgvahfq5g1xmd31v1mvyl47vy3-initrd-linux-5.4.0-armv7l-unknown-linux-gnueabihf-initrd
+7590362 bytes read in 440 ms (16.5 MiB/s)
+Retrieving file: /boot/extlinux/../nixos/kww4jhgrynzfk8a1yif1w76qcwa2mw7g-linux-5.4.0-armv7l-unknown-linux-gnueabihf-zImage
+3989840 bytes read in 243 ms (15.7 MiB/s)
+append: systemConfig=/nix/store/rbhn3aap7b8hyrq5q5w3mb2yd6sww3bi-nixos-system-pynq-20.09pre-git init=/nix/store/rbhn3aap7b8hyrq5q5w3mb2yd6sww3bi-nixos-system-pynq-20.09pre-git/init systemd.log_target=console systemd.journald.forward_to_console=1 loglevel=7
+Retrieving file: /boot/extlinux/../nixos/kww4jhgrynzfk8a1yif1w76qcwa2mw7g-linux-5.4.0-armv7l-unknown-linux-gnueabihf-dtbs/zynq-pynq-z1.dtb
+11218 bytes read in 30 ms (364.3 KiB/s)
+## Flattened Device Tree blob at 01f00000
+   Booting using the fdt blob at 0x1f00000
+   Loading Ramdisk to 1c8c2000, end 1cfff1da ... OK
+   Loading Device Tree to 1ead5000, end 1eadabd1 ... OK
+
+Starting kernel ...
+
+Booting Linux on physical CPU 0x0
+Linux version 5.4.0-xilinx (nixbld@localhost) (gcc version 9.3.0 (GCC)) #1-NixOS SMP Thu Jan 1 00:00:01 UTC 1970
+CPU: ARMv7 Processor [413fc090] revision 0 (ARMv7), cr=18c5387d
+CPU: PIPT / VIPT nonaliasing data cache, VIPT aliasing instruction cache
+OF: fdt: Machine model: Digilent Zynq PYNQ Z1
+Memory policy: Data cache writealloc
+cma: Reserved 16 MiB at 0x1f000000
+percpu: Embedded 20 pages/cpu s51852 r8192 d21876 u81920
+Built 1 zonelists, mobility grouping on.  Total pages: 129920
+Kernel command line: systemConfig=/nix/store/rbhn3aap7b8hyrq5q5w3mb2yd6sww3bi-nixos-system-pynq-20.09pre-git init=/nix/store/rbhn3aap7b8hyrq5q5w3mb2yd6sww3bi-nixos-system-pynq-20.09pre-git/init systemd.log_target=console systemd.journald.forward_to_console=1 loglevel=7
+Dentry cache hash table entries: 65536 (order: 6, 262144 bytes, linear)
+Inode-cache hash table entries: 32768 (order: 5, 131072 bytes, linear)
+allocated 524288 bytes of page_ext
+mem auto-init: stack:off, heap alloc:off, heap free:off
+Memory: 480052K/524288K available (9216K kernel code, 632K rwdata, 2520K rodata, 1024K init, 199K bss, 27852K reserved, 16384K cma-reserved, 0K highmem)
+ftrace: allocating 35233 entries in 69 pages
+rcu: Hierarchical RCU implementation.
+rcu: 	RCU restricting CPUs from NR_CPUS=4 to nr_cpu_ids=2.
+rcu: RCU calculated value of scheduler-enlistment delay is 10 jiffies.
+rcu: Adjusting geometry for rcu_fanout_leaf=16, nr_cpu_ids=2
+NR_IRQS: 16, nr_irqs: 16, preallocated irqs: 16
+efuse mapped to (ptrval)
+slcr mapped to (ptrval)
+L2C: platform modifies aux control register: 0x02060000 -> 0x32460000
+L2C: DT/platform modifies aux control register: 0x02060000 -> 0x32460000
+L2C-310 erratum 769419 enabled
+L2C-310 enabling early BRESP for Cortex-A9
+L2C-310 full line of zeros enabled for Cortex-A9
+L2C-310 dynamic clock gating enabled, standby mode enabled
+L2C-310 cache controller enabled, 8 ways, 512 kB
+L2C-310: CACHE_ID 0x410000c8, AUX_CTRL 0x46460001
+random: get_random_bytes called from start_kernel+0x29c/0x484 with crng_init=0
+zynq_clock_init: clkc starts at (ptrval)
+Zynq clock init
+sched_clock: 64 bits at 325MHz, resolution 3ns, wraps every 4398046511103ns
+clocksource: arm_global_timer: mask: 0xffffffffffffffff max_cycles: 0x4af477f6aa, max_idle_ns: 440795207830 ns
+Switching to timer-based delay loop, resolution 3ns
+Console: colour dummy device 80x30
+printk: console [tty0] enabled
+Calibrating delay loop (skipped), value calculated using timer frequency.. 650.00 BogoMIPS (lpj=3250000)
+pid_max: default: 32768 minimum: 301
+Mount-cache hash table entries: 1024 (order: 0, 4096 bytes, linear)
+Mountpoint-cache hash table entries: 1024 (order: 0, 4096 bytes, linear)
+CPU: Testing write buffer coherency: ok
+CPU0: Spectre v2: using BPIALL workaround
+CPU0: thread -1, cpu 0, socket 0, mpidr 80000000
+Setting up static identity map for 0x100000 - 0x100060
+rcu: Hierarchical SRCU implementation.
+smp: Bringing up secondary CPUs ...
+CPU1: thread -1, cpu 1, socket 0, mpidr 80000001
+CPU1: Spectre v2: using BPIALL workaround
+smp: Brought up 1 node, 2 CPUs
+SMP: Total of 2 processors activated (1300.00 BogoMIPS).
+CPU: All CPU(s) started in SVC mode.
+devtmpfs: initialized
+VFP support v0.3: implementor 41 architecture 3 part 30 variant 9 rev 4
+clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 19112604462750000 ns
+futex hash table entries: 512 (order: 3, 32768 bytes, linear)
+pinctrl core: initialized pinctrl subsystem
+NET: Registered protocol family 16
+DMA: preallocated 256 KiB pool for atomic coherent allocations
+cpuidle: using governor menu
+hw-breakpoint: found 5 (+1 reserved) breakpoint and 1 watchpoint registers.
+hw-breakpoint: maximum watchpoint size is 4 bytes.
+zynq-ocm f800c000.ocmc: ZYNQ OCM pool: 256 KiB @ 0x(ptrval)
+e0000000.serial: ttyPS0 at MMIO 0xe0000000 (irq = 24, base_baud = 6250000) is a xuartps
+printk: console [ttyPS0] enabled
+fbcon: Taking over console
+vgaarb: loaded
+SCSI subsystem initialized
+usbcore: registered new interface driver usbfs
+usbcore: registered new interface driver hub
+usbcore: registered new device driver usb
+mc: Linux media interface: v0.10
+videodev: Linux video capture interface: v2.00
+pps_core: LinuxPPS API ver. 1 registered
+pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti <giometti@linux.it>
+PTP clock support registered
+EDAC MC: Ver: 3.0.0
+FPGA manager framework
+Advanced Linux Sound Architecture Driver Initialized.
+clocksource: Switched to clocksource arm_global_timer
+VFS: Disk quotas dquot_6.6.0
+VFS: Dquot-cache hash table entries: 1024 (order 0, 4096 bytes)
+thermal_sys: Registered thermal governor 'step_wise'
+NET: Registered protocol family 2
+tcp_listen_portaddr_hash hash table entries: 512 (order: 0, 6144 bytes, linear)
+TCP established hash table entries: 4096 (order: 2, 16384 bytes, linear)
+TCP bind hash table entries: 4096 (order: 3, 32768 bytes, linear)
+TCP: Hash tables configured (established 4096 bind 4096)
+UDP hash table entries: 256 (order: 1, 8192 bytes, linear)
+UDP-Lite hash table entries: 256 (order: 1, 8192 bytes, linear)
+NET: Registered protocol family 1
+RPC: Registered named UNIX socket transport module.
+RPC: Registered udp transport module.
+RPC: Registered tcp transport module.
+RPC: Registered tcp NFSv4.1 backchannel transport module.
+NET: Registered protocol family 44
+PCI: CLS 0 bytes, default 64
+Trying to unpack rootfs image as initramfs...
+Freeing initrd memory: 7416K
+hw perfevents: no interrupt-affinity property for /pmu@f8891000, guessing.
+hw perfevents: enabled with armv7_cortex_a9 PMU driver, 7 counters available
+Initialise system trusted keyrings
+workingset: timestamp_bits=14 max_order=17 bucket_order=3
+zbud: loaded
+jffs2: version 2.2. (NAND) (SUMMARY)  © 2001-2006 Red Hat, Inc.
+Key type asymmetric registered
+Asymmetric key parser 'x509' registered
+Block layer SCSI generic (bsg) driver version 0.4 loaded (major 246)
+io scheduler mq-deadline registered
+io scheduler kyber registered
+zynq-pinctrl 700.pinctrl: zynq pinctrl initialized
+dma-pl330 f8003000.dmac: Loaded driver for PL330 DMAC-241330
+dma-pl330 f8003000.dmac: 	DBUFF-128x8bytes Num_Chans-8 Num_Peri-4 Num_Events-16
+Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
+brd: module loaded
+loop: module loaded
+libphy: Fixed MDIO Bus: probed
+CAN device driver interface
+libphy: MACB_mii_bus: probed
+RTL8211E Gigabit Ethernet e000b000.ethernet-ffffffff:00: attached PHY driver [RTL8211E Gigabit Ethernet] (mii_bus:phy_addr=e000b000.ethernet-ffffffff:00, irq=POLL)
+macb e000b000.ethernet eth0: Cadence GEM rev 0x00020118 at 0xe000b000 irq 25 (5e:55:f4:5d:e5:50)
+e1000e: Intel(R) PRO/1000 Network Driver - 3.2.6-k
+e1000e: Copyright(c) 1999 - 2015 Intel Corporation.
+ehci_hcd: USB 2.0 'Enhanced' Host Controller (EHCI) Driver
+ehci-pci: EHCI PCI platform driver
+usbcore: registered new interface driver usb-storage
+i2c /dev entries driver
+cdns-wdt f8005000.watchdog: Xilinx Watchdog Timer with timeout 10s
+EDAC MC: ECC not enabled
+Xilinx Zynq CpuIdle Driver started
+sdhci: Secure Digital Host Controller Interface driver
+sdhci: Copyright(c) Pierre Ossman
+sdhci-pltfm: SDHCI platform and OF driver helper
+mmc0: SDHCI controller on e0100000.mmc [e0100000.mmc] using ADMA
+ledtrig-cpu: registered to indicate activity on CPUs
+clocksource: ttc_clocksource: mask: 0xffff max_cycles: 0xffff, max_idle_ns: 551318127 ns
+timer #0 at (ptrval), irq=38
+hidraw: raw HID events driver (C) Jiri Kosina
+usbcore: registered new interface driver usbhid
+usbhid: USB HID core driver
+fpga_manager fpga0: Xilinx Zynq FPGA Manager registered
+drop_monitor: Initializing network drop monitor service
+NET: Registered protocol family 10
+Segment Routing with IPv6
+sit: IPv6, IPv4 and MPLS over IPv4 tunneling driver
+NET: Registered protocol family 17
+can: controller area network core (rev 20170425 abi 9)
+NET: Registered protocol family 29
+can: raw protocol (rev 20170425)
+mmc0: new high speed SDXC card at address 5048
+can: broadcast manager protocol (rev 20170425 t)
+mmcblk0: mmc0:5048 SD256 239 GiB 
+can: netlink gateway (rev 20190810) max_hops=1
+ mmcblk0: p1 p2
+Registering SWP/SWPB emulation handler
+Loading compiled-in X.509 certificates
+zswap: loaded using pool lzo/zbud
+Key type ._fscrypt registered
+Key type .fscrypt registered
+usb_phy_generic phy0: phy0 supply vcc not found, using dummy regulator
+of-fpga-region fpga-full: FPGA Region probed
+chipidea-usb2 e0002000.usb: e0002000.usb supply vbus not found, using dummy regulator
+ci_hdrc ci_hdrc.0: EHCI Host Controller
+ci_hdrc ci_hdrc.0: new USB bus registered, assigned bus number 1
+ci_hdrc ci_hdrc.0: USB 2.0 started, EHCI 1.00
+hub 1-0:1.0: USB hub found
+hub 1-0:1.0: 1 port detected
+hctosys: unable to open rtc device (rtc0)
+of_cfs_init
+of_cfs_init: OK
+ALSA device list:
+  No soundcards found.
+Freeing unused kernel memory: 1024K
+Run /init as init process
+
+<<< NixOS Stage 1 >>>
+
+loading module dm_mod...
+device-mapper: ioctl: 4.41.0-ioctl (2019-09-16) initialised: dm-devel@redhat.com
+running udev...
+Starting version 245
+random: fast init done
+kbd_mode: KDSKBMODE: Inappropriate ioctl for device
+starting device mapper and LVM...
+random: lvm: uninitialized urandom read (4 bytes read)
+checking /dev/disk/by-label/NIXOS_SD...
+fsck (busybox 1.31.1)
+[fsck.ext4 (1) -- /mnt-root/] fsck.ext4 -a /dev/disk/by-label/NIXOS_SD
+NIXOS_SD: clean, 35117/46752 files, 191779/195800 blocks
+resizing /dev/disk/by-label/NIXOS_SD...
+NIXOS_SD: 35117/46752 files (0.1% non-contiguous), 191779/195800 blocks
+resize2fs 1.45.5 (07-Jan-2020)
+The filesystem is already 195800 (4k) blocks long.  Nothing to do!
+
+mounting /dev/disk/by-label/NIXOS_SD on /...
+EXT4-fs (mmcblk0p2): mounted filesystem with ordered data mode. Opts: (null)
+
+<<< NixOS Stage 2 >>>
+
+EXT4-fs (mmcblk0p2): re-mounted. Opts: (null)
+booting system configuration /nix/store/rbhn3aap7b8hyrq5q5w3mb2yd6sww3bi-nixos-system-pynq-20.09pre-git
+running activation script...
+random: perl: uninitialized urandom read (4 bytes read)
+setting up /etc...
+random: perl: uninitialized urandom read (4 bytes read)
+random: mktemp: uninitialized urandom read (10 bytes read)
+++ /nix/store/6jbs99h5jy4qbfm65n06974vjacicr5x-util-linux-2.35.1-armv7l-unknown-linux-gnueabihf-bin/bin/findmnt -n -o SOURCE /
++ rootPart=/dev/disk/by-label/NIXOS_SD
+++ lsblk -npo PKNAME /dev/disk/by-label/NIXOS_SD
++ bootDevice=/dev/mmcblk0
++ echo ,+,
++ sfdisk -N2 --no-reread /dev/mmcblk0
+Disk /dev/mmcblk0: 239.8 GiB, 256708182016 bytes, 501383168 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: dos
+Disk identifier: 0x2178694e
+
+Old situation:
+
+Device         Boot Start     End Sectors   Size Id Type
+/dev/mmcblk0p1      16384   77823   61440    30M  b W95 FAT32
+/dev/mmcblk0p2 *    77824 1644223 1566400 764.9M 83 Linux
+
+/dev/mmcblk0p2: 
+New situation:
+Disklabel type: dos
+Disk identifier: 0x2178694e
+
+Device         Boot Start       End   Sectors  Size Id Type
+/dev/mmcblk0p1      16384     77823     61440   30M  b W95 FAT32
+/dev/mmcblk0p2 *    77824 501383167 501305344  239G 83 Linux
+
+The partition table has been altered.
+Calling ioctl() to re-read partition table.
+Re-reading the partition table failed.: Device or resource busy
+The kernel still uses the old table. The new table will be used at the next reboot or after you run partprobe(8) or partx(8).
+Syncing disks.
++ /nix/store/1vrj6pa6ki44h77wj8nr8hnc0c5ily03-parted-3.3-armv7l-unknown-linux-gnueabihf/bin/partprobe
++ /nix/store/cc70q0mrvb2zly7jg0gbnjcdv9r5yf8m-e2fsprogs-1.45.5-armv7l-unknown-linux-gnueabihf-bin/bin/resize2fs /dev/disk/by-label/NIXOS_SD
+resize2fs 1.45.5 (07-Jan-2020)
+EXT4-fs (mmcblk0p2): resizing filesystem from 195800 to 62663168 blocks
+random: crng init done
+EXT4-fs (mmcblk0p2): resized filesystem to 62663168
+Filesystem at /dev/disk/by-label/NIXOS_SD is mounted on /; on-line resizing required
+old_desc_blocks = 1, new_desc_blocks = 30
+The filesystem on /dev/disk/by-label/NIXOS_SD is now 62663168 (4k) blocks long.
+
++ /nix/store/gxrkr6axs8m70cimq8fyqrgx86r8dgc4-nix-2.3.6-armv7l-unknown-linux-gnueabihf/bin/nix-store --load-db
++ touch /etc/NIXOS
++ /nix/store/gxrkr6axs8m70cimq8fyqrgx86r8dgc4-nix-2.3.6-armv7l-unknown-linux-gnueabihf/bin/nix-env -p /nix/var/nix/profiles/system --set /run/current-system
++ rm -f /nix-path-registration
+starting systemd...
+systemd[1]: Inserted module 'autofs4'
+systemd 245 running in system mode. (+PAM +AUDIT -SELINUX +IMA +APPARMOR +SMACK -SYSVINIT +UTMP -LIBCRYPTSETUP +GCRYPT -GNUTLS +ACL +XZ +LZ4 +SECCOMP +BLKID -ELFUTILS +KMOD +IDN2 -IDN +PCRE2 default-hierarchy=hybrid)
+Detected architecture arm.
+
+Welcome to NixOS 20.09 (Nightingale)!
+
+Set hostname to <pynq>.
+Initializing machine ID from random generator.
+cgroup compatibility translation between legacy and unified hierarchy settings activated. See cgroup-compat debug messages for details.
+[  OK  ] Created slice system-getty.slice.
+[  OK  ] Created slice system-serial\x2dgetty.slice.
+[  OK  ] Created slice User and Session Slice.
+[  OK  ] Started Dispatch Password …ts to Console Directory Watch.
+[  OK  ] Started Forward Password R…uests to Wall Directory Watch.
+[  OK  ] Reached target Containers.
+[  OK  ] Reached target Paths.
+[  OK  ] Reached target Remote File Systems.
+[  OK  ] Reached target Slices.
+[  OK  ] Reached target Swap.
+[  OK  ] Reached target System Time Synchronized.
+[  OK  ] Listening on Process Core Dump Socket.
+[  OK  ] Listening on initctl Compatibility Named Pipe.
+[  OK  ] Listening on Journal Socket (/dev/log).
+[  OK  ] Listening on Journal Socket.
+[  OK  ] Listening on udev Control Socket.
+[  OK  ] Listening on udev Kernel Socket.
+         Mounting POSIX Message Queue File System...
+         Mounting Kernel Debug File System...
+         Starting Create list of st…odes for the current kernel...
+         Starting Journal Service...
+         Starting Load Kernel Modules...
+         Starting Remount Root and Kernel File Systems...
+         Starting udev Coldplug all Devices...
+[  OK  ] Mounted POSIX Message Queue File System.
+[  OK  ] Mounted Kernel Debug File System.
+[  OK  ] Finished Create list of st… nodes for the current kernel.
+         Starting Create Static Device Nodes in /dev...
+[  OK  ] Finished Create Static Device Nodes in /dev.
+         Starting udev Kernel Device Manager...
+bridge: filtering via arp/ip/ip6tables is no longer available by default. Update your scripts to load br_netfilter if you need this.
+EXT4-fs (mmcblk0p2): re-mounted. Opts: (null)
+[  OK  ] Finished Remount Root and Kernel File Systems.
+[  OK  ] Reached target Local File Systems (Pre).
+[  OK  ] Reached target Local File Systems.
+         Starting Load/Save Random Seed...
+tun: Universal TUN/TAP device driver, 1.6
+[  OK  ] Finished Load Kernel Modules.
+         Mounting Kernel Configuration File System...
+         Starting Firewall...
+         Starting Apply Kernel Variables...
+[  OK  ] Mounted Kernel Configuration File System.
+[  OK  ] Finished Load/Save Random Seed.
+[  OK  ] Finished Apply Kernel Variables.
+[  OK  ] Started Journal Service.
+systemd-modules-load[371]: Inserted module 'bridge'
+systemd-modules-load[371]: Inserted module 'macvlan'
+systemd-modules-load[371]: Inserted module 'tap'
+systemd-modules-load[371]: Inserted module 'tun'
+systemd-modules-load[371]: Module 'ipv6' is built in
+systemd-modules-load[371]: Module 'loop' is built in
+systemd-modules-load[371]:          Starting Flush Journal to Persistent Storage...
+Module 'atkbd' is built in
+systemd-sysctl[383]: Not setting net/ipv4/conf/all/rp_filter (explicit setting exists).
+systemd-sysctl[383]: Not setting net/ipv4/conf/default/rp_filter (explicit setting exists).
+systemd-sysctl[383]: Not setting net/ipv4/conf/all/accept_source_route (explicit setting exists).
+systemd-sysctl[383]: Not setting net/ipv4/conf/default/accept_source_route (explicit setting exists).
+systemd-sysctl[383]: Not setting net/ipv4/conf/all/promote_secondaries (explicit setting exists).
+systemd-sysctl[383]: Not setting net/ipv4/conf/default/promote_secondaries (explicit setting exists).
+systemd-sysctl[383]: Couldn't write '0' to 'kernel/yama/ptrace_scope', ignoring: No such file or directory
+[  OK  ] Finished udev Coldplug all Devices.
+         Starting udev Wait for Complete Device Initialization...
+[  OK  ] Started udev Kernel Device Manager.
+[  OK  ] Finished Flush Journal to Persistent Storage.
+systemd-udevd[378]: /nix/store/hz8h302x3vsxwal5ijmb5y76q1jzn3fz-udev-rules/11-dm-lvm.rules:40 Invalid value for OPTIONS key, ignoring: 'event_timeout=180'
+systemd-udevd[378]: /nix/store/hz8h302x3vsxwal5ijmb5y76q1jzn3fz-udev-rules/11-dm-lvm.rules:40 The line takes no effect, ignoring.
+         Starting Create Volatile Files and Directories...
+[  OK  ] Finished Create Volatile Files and Directories.
+         Starting Rebuild Journal Catalog...
+         Starting Network Time Synchronization...
+         Starting Update UTMP about System Boot/Shutdown...
+[  OK  ] Finished Update UTMP about System Boot/Shutdown.
+[  OK  ] Finished Rebuild Journal Catalog.
+         Starting Update is Completed...
+[  OK  ] Finished Update is Completed.
+[  OK  ] Started Network Time Synchronization.
+cpufreq: cpufreq_online: CPU0: Running at unlisted freq: 650000 KHz
+cpufreq: cpufreq_online: CPU0: Unlisted initial frequency changed to: 666667 KHz
+[  OK  ] Found device /dev/ttyPS0.
+systemd-udevd[422]: Using default interface naming scheme 'v245'.
+systemd-udevd[422]: ethtool: autonegotiation is unset or enabled, the speed and duplex are not writable.
+[  OK  ] Finished Firewall.
+pl310-edac-l2 f8f02000.cache-controller: parity check not enabled
+systemd-udevd[414]: ethtool: autonegotiation is unset or enabled, the speed and duplex are not writable.
+systemd-udevd[414]: Using default interface naming scheme 'v245'.
+systemd-udevd[414]: Could not set Alias=, MACAddress= or MTU= on ip6tnl0: Invalid argument
+systemd-udevd[414]: ip6tnl0: Could not apply link config, ignoring: Invalid argument
+systemd-udevd[422]: ethtool: autonegotiation is unset or enabled, the speed and duplex are not writable.
+systemd-udevd[417]: ethtool: autonegotiation is unset or enabled, the speed and duplex are not writable.
+udevadm[411]: systemd-udev-settle.service is deprecated.
+[  OK  ] Finished udev Wait for Complete Device Initialization.
+[  OK  ] Reached target System Initialization.
+[  OK  ] Started Daily Cleanup of Temporary Directories.
+[  OK  ] Reached target Timers.
+[  OK  ] Listening on D-Bus System Message Bus Socket.
+[  OK  ] Listening on Nix Daemon Socket.
+[  OK  ] Reached target Sockets.
+[  OK  ] Reached target Basic System.
+         Starting DHCP Client...
+         Starting Name Service Cache Daemon...
+         Starting resolvconf update...
+[  OK  ] Started D-Bus System Message Bus.
+dhcpcd[521]: dev: loaded udev
+nscd[526]: 526 monitoring file `/etc/passwd` (1)
+nscd[526]: 526 monitoring directory `/etc` (2)
+nscd[526]: 526 monitoring file `/etc/group` (3)
+8021q: 802.1Q VLAN Support v1.8
+nscd[526]: 526 monitoring directory `/etc` (2)
+nscd[526]: 526 monitoring file `/etc/hosts` (4)
+nscd[526]: 526 monitoring directory `/etc` (2)
+nscd[526]: 526 disabled inotify-based monitoring for file `/etc/resolv.conf': No such file or directory
+nscd[526]: 526 stat failed for file `/etc/resolv.conf'; will try again later: No such file or directory
+nscd[526]: 526 monitoring file `/etc/services` (5)
+nscd[526]: 526 monitoring directory `/etc` (2)
+nscd[526]: 526 disabled inotify-based monitoring for file `/etc/netgroup': No such file or directory
+nscd[526]: 526 stat failed for file `/etc/netgroup'; will try again later: No such file or directory
+[  OK  ] Listening on Load/Save RF …itch Status /dev/rfkill Watch.
+[  OK  ] Started Name Service Cache Daemon.
+[  OK  ] Reached target Host and Network Name Lookups.
+[  OK  ] Reached target User and Group Name Lookups.
+         Starting Login Service...
+cfg80211: Loading compiled-in X.509 certificates for regulatory database
+cfg80211: Loaded X.509 cert 'sforshee: 00b28ddf47aef9cea7'
+platform regulatory.0: Direct firmware load for regulatory.db failed with error -2
+cfg80211: failed to load regulatory.db
+         Stopping Name Service Cache Daemon...
+systemd-logind[538]: New seat seat0.
+nscd.service: Succeeded.
+[  OK  ] Stopped Name Service Cache Daemon.
+[  OK  ] Started Login Service.
+         Starting Name Service Cache Daemon...
+nscd[592]: 592 monitoring file `/etc/passwd` (1)
+nscd[592]: 592 monitoring directory `/etc` (2)
+nscd[592]: 592 monitoring file `/etc/group` (3)
+nscd[592]: 592 monitoring directory `/etc` (2)
+nscd[592]: 592 monitoring file `/etc/hosts` (4)
+nscd[592]: 592 monitoring directory `/etc` (2)
+nscd[592]: 592 monitoring file `/etc/resolv.conf` (5)
+nscd[592]: 592 monitoring directory `/etc` (2)
+nscd[592]: 592 monitoring file `/etc/services` (6)
+nscd[592]: 592 monitoring directory `/etc` (2)
+nscd[592]: 592 disabled inotify-based monitoring for file `/etc/netgroup': No such file or directory
+nscd[592]: 592 stat failed for file `/etc/netgroup'; will try again later: No such file or directory
+[  OK  ] Finished resolvconf update.
+[  OK  ] Reached target Network (Pre).
+[  OK  ] Reached target All Network Interfaces (deprecated).
+         Starting Networking Setup...
+[  OK  ] Started Name Service Cache Daemon.
+[  OK  ] Finished Networking Setup.
+         Starting Extra networking commands....
+[  OK  ] Finished Extra networking commands..
+[  OK  ] Reached target Network.
+         Starting SSH Daemon...
+         Starting Permit User Sessions...
+dhcpcd[521]: eth0: waiting for carrier
+[  OK  ] Finished Permit User Sessions.
+[  OK  ] Started Getty on tty1.
+[  OK  ] Started Serial Getty on ttyPS0.
+[  OK  ] Reached target Login Prompts.
+macb e000b000.ethernet eth0: link up (1000/Full)
+IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
+dhcpcd[521]: eth0: carrier acquired
+dhcpcd[521]: DUID 00:01:00:01:c7:92:bc:9f:5e:55:f4:5d:e5:50
+dhcpcd[521]: eth0: IAID f4:5d:e5:50
+dhcpcd[521]: eth0: adding address fe80::5c55:f4ff:fe5d:e550
+dhcpcd[521]: eth0: soliciting a DHCP lease
+dhcpcd[521]: eth0: offered 172.22.71.71 from 172.22.71.1
+dhcpcd[521]: eth0: probing address 172.22.71.71/25
+dhcpcd[521]: eth0: soliciting an IPv6 router
+
+
+<<< Welcome to NixOS 20.09pre-git (armv7l) - ttyPS0 >>>
+
+
+pynq login: dhcpcd[521]: eth0: Router Advertisement from fe80::88b6:b1ff:fe53:a066
+dhcpcd[521]: eth0: no global addresses for default route
+dhcpcd[521]: eth0: leased 172.22.71.71 for 3600 seconds
+dhcpcd[521]: eth0: adding route to 172.22.71.0/25
+dhcpcd[521]: eth0: adding default route via 172.22.71.1
+nscd[592]: 592 monitored file `/etc/resolv.conf` was written to
+nscd.service: Succeeded.
+nscd[707]: 707 monitoring file `/etc/passwd` (1)
+nscd[707]: 707 monitoring directory `/etc` (2)
+nscd[707]: 707 monitoring file `/etc/group` (3)
+nscd[707]: 707 monitoring directory `/etc` (2)
+nscd[707]: 707 monitoring file `/etc/hosts` (4)
+nscd[707]: 707 monitoring directory `/etc` (2)
+nscd[707]: 707 monitoring file `/etc/resolv.conf` (5)
+nscd[707]: 707 monitoring directory `/etc` (2)
+nscd[707]: 707 monitoring file `/etc/services` (6)
+nscd[707]: 707 monitoring directory `/etc` (2)
+nscd[707]: 707 disabled inotify-based monitoring for file `/etc/netgroup': No such file or directory
+nscd[707]: 707 stat failed for file `/etc/netgroup'; will try again later: No such file or directory
+dhcpcd[722]: Failed to reload-or-try-restart ntpd.service: Unit ntpd.service not found.
+dhcpcd[722]: Failed to reload-or-try-restart openntpd.service: Unit openntpd.service not found.
+dhcpcd[722]: Failed to reload-or-try-restart chronyd.service: Unit chronyd.service not found.
+dhcpcd[521]: forked to background, child pid 723
+```
