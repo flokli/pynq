@@ -3,6 +3,8 @@ self: super: {
 
   vivado = super.callPackage ./pkgs/vivado {};
 
+  pynq-deploy = super.callPackage ./pkgs/pynq-deploy {};
+
   # we need a later ghdl containing the logic_32 struct
   # https://github.com/ghdl/ghdl-yosys-plugin/issues/117
   ghdl = super.ghdl.overrideAttrs (old : {

@@ -26,6 +26,7 @@ in {
       gdb
       gnumake
       openocd
+      pynq-deploy
       yosys
 
       profileEnv

@@ -65,6 +65,11 @@ https://github.com/NixOS/nixpkgs/pull/91195.
 ### Incremental switching
 This also supports switching already existing systems to a new configuration.
 
+Run `pynq-deploy` from anywhere on the repo to build the system closure, copy
+it over to a running PYNQ, switch and activate.
+
+Do it more granular (and from the repo root) if you want to have finer control:
+
  - Run `nix-build -A pynq.toplevel` to obtain a new system closure (`$newClosure`)
  - Use `nix-copy-closure --to root@$pynqIP /nix/store/…` to copy the closure to
  - the target system
