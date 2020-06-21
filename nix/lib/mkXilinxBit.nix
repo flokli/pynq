@@ -1,7 +1,6 @@
 { stdenv
 , gnumake
 , yosys
-, verilator
 , vivado }:
 
 { toplevelName ? "main"
