@@ -66,8 +66,12 @@ in stdenv.mkDerivation {
     && ((builtins.match ".*\\.tcl" path) == null)
   ) src);
 
-  nativeBuildInputs = [ gnumake vivado yosys ];
-
+  nativeBuildInputs = [ gnumake yosys ];
+  # ensure don't try to cross-compile vivado, or provide some cross
+  # dependencies during build.
+  # Just adding vivado to nativeBuildInputs drags in tons of graphical
+  # dependencies, which do not (yet) cross-compile.
+  depsBuildBuild = [ vivado ];
   preConfigure = ''
     cp ${../../lib/Makefile} Makefile
     cp ${../../lib/pynq.xdc} pynq.xdc
