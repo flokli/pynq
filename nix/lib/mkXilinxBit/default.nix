@@ -73,8 +73,8 @@ in stdenv.mkDerivation {
   # dependencies, which do not (yet) cross-compile.
   depsBuildBuild = [ vivado ];
   preConfigure = ''
-    cp ${../../lib/Makefile} Makefile
-    cp ${../../lib/pynq.xdc} pynq.xdc
+    cp ${./Makefile} Makefile
+    cp ${./pynq.xdc} pynq.xdc
     export HOME=$(mktemp -d)
   '';
 
