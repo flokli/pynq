@@ -81,6 +81,7 @@ in stdenv.mkDerivation {
   makeFlags = [ name ];
 
   installPhase = ''
-    cp ${toplevelName}.bit $out
+    mkdir -p $out
+    cp ${toplevelName}.bit $out/
   '';
 }

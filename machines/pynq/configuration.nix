@@ -2,7 +2,7 @@
 
 let
   pynqBlinkBin = pkgs.buildPackages.mkXilinxBin {
-    name = "blink.bit";
+    name = "blink";
     bit = pkgs.mkXilinxBit {
       toplevelName = "blink";
       src = ./examples/blink;
