@@ -28,6 +28,6 @@ self: super: {
 
   ubootPynq = super.callPackage ./pkgs/u-boot-pynq {};
 
-  mkXilinxBit = super.callPackage ./lib/mkXilinxBit.nix { };
-  mkXilinxBin = super.callPackage ./lib/mkXilinxBin.nix { };
+  mkXilinxBit = super.callPackage ./lib/mkXilinxBit { };
+  mkXilinxBin = super.callPackage ./lib/mkXilinxBin { };
 }
