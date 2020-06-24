@@ -1,0 +1,63 @@
+import DIPSwitch;
+
+typedef struct {
+	UInt#(1) r;
+	UInt#(1) g;
+	UInt#(1) b;
+} Color#(numeric type depth) deriving(Bits, Eq);
+
+typedef Color#(1) RGB;
+
+
+(* always_ready, always_enabled *)
+interface SomeLedsAndButtons;
+	// leds are outputs in verilog, meaning they're methods in here
+
+	method Bit#(4) led;
+	method Color#(1) led4;
+	method Color#(1) led5;
+	(*prefix=""*)method Action button(Bit#(4) btn);
+	//TODO sw0,sw1
+
+endinterface
+
+typedef UInt#(16) TUInt16;
+
+(* always_enabled, always_ready *)
+(* synthesize *)
+module mkMod(SomeLedsAndButtons);
+	Wire#(Bit#(4)) btnIn <- mkBypassWire();
+
+	Reg#(TUInt16) step <- mkReg(0);
+
+	rule counter;
+		// if we're don't roll over yet increment
+		if (step < unpack('1))
+			step <= step + 1;
+		else
+			step <= 0;
+	endrule
+
+	method Bit#(4) led();
+		Bit#(4) ledOut;
+
+		ledOut[0] = pack(step % 2 == 0);
+		ledOut[1] = pack(step > 128);
+		ledOut[2] = btnIn[2];
+		ledOut[3] = btnIn[3];
+
+	  	return ledOut;
+	endmethod
+
+	method Color#(1) led4();
+		return RGB { r: 1, g: 0, b: 1 };
+	endmethod
+
+	method Color#(1) led5();
+		return RGB { r: 0, g: 0, b: 1 };
+	endmethod
+
+	method Action button(Bit#(4) btn);
+		btnIn <= btn;
+	endmethod
+endmodule
